@@ -1,0 +1,8 @@
+arthuino/Makefile
+arthuino/Arthuino
+arthuino/*.o
+arthuino/moc_*.cpp
+arthuino/ui_*.h
+
+serial/src/*.o
+serial/src/Linux/*.o
