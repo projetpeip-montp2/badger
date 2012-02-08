@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Arthuino</class>
+ <widget class="QWidget" name="Arthuino">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>745</width>
+    <height>410</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Arthuino</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icone.png</normaloff>icone.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Port :</string>
+       </property>
+       <property name="buddy">
+        <cstring>port</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="port">
+       <property name="text">
+        <string>/dev/ttyACM0</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Baud Rate :</string>
+       </property>
+       <property name="buddy">
+        <cstring>baud</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="baud">
+       <property name="currentIndex">
+        <number>4</number>
+       </property>
+       <item>
+        <property name="text">
+         <string>300 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>1200 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>2400 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>4800 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>9600 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>19200 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>38400 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>57600 baud</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>115200 baud</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="boutonConnexion">
+       <property name="text">
+        <string>Connexion</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="listeMessages">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Commande :</string>
+       </property>
+       <property name="buddy">
+        <cstring>message</cstring>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="message"/>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="nouvelleLigne">
+       <property name="text">
+        <string>Nouvelle ligne</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="boutonEnvoyer">
+       <property name="text">
+        <string>Envoyer</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>port</tabstop>
+  <tabstop>baud</tabstop>
+  <tabstop>boutonConnexion</tabstop>
+  <tabstop>message</tabstop>
+  <tabstop>boutonEnvoyer</tabstop>
+  <tabstop>listeMessages</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
