@@ -45,6 +45,8 @@ namespace arthuino
         void deconnexion();
 
     private slots:
+        void on_plusMoinsBouton_clicked();
+
         void on_boutonConnexion_clicked();
         void on_boutonEnvoyer_clicked();
         void on_message_returnPressed();

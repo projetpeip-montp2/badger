@@ -41,6 +41,9 @@ namespace arthuino
         m_threadReader = new ReadSerialThread(m_serialStream);
 
         connect(m_threadReader, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
+
+        plusMoinsBouton->setText("Plus...");
+        configurationsAvancees->hide();
     }
 
 
@@ -115,6 +118,23 @@ namespace arthuino
     }
 
 
+    void FenPrincipale::on_plusMoinsBouton_clicked()
+    {
+        if(plusMoinsBouton->isChecked())
+        {
+            plusMoinsBouton->setText("Moins...");
+            configurationsAvancees->show();
+        }
+
+        else
+        {
+            plusMoinsBouton->setText("Plus...");
+            configurationsAvancees->hide();
+        }
+
+
+    }
+
     void FenPrincipale::on_boutonConnexion_clicked
     (
     )
@@ -138,12 +158,18 @@ namespace arthuino
         {
             std::string maChaine(message->text().toStdString());
 
-            if(nouvelleLigne->checkState() == Qt::Checked)
+            listeMessages->append("<- " + message->text());
+
+            if(commencerSTXBox->isChecked())
+                maChaine = char(2) + maChaine;
+
+            if(termineLigneBox->isChecked())
                 maChaine += '\n';
 
-            m_serialStream->write(maChaine);
+            if(finirCRBox->isChecked())
+                maChaine += char(13);
 
-            listeMessages->append("<- " + message->text());
+            m_serialStream->write(maChaine);
 
             message->clear();
             message->setFocus();
