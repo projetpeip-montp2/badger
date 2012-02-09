@@ -31,19 +31,19 @@ namespace arthuino
 {
     class ReadSerialThread : public QThread
     {
-        Q_OBJECT
+    Q_OBJECT
 
-        public:
-            ReadSerialThread(serial::serialstream *serial);
+    public:
+        ReadSerialThread(serial::serialstream *serial);
 
-        protected:
-            void run();
+    protected:
+        void run();
 
-        signals:
-           void message(const QString &);
+    signals:
+       void message(const QString &);
 
-        private:
-            serial::serialstream *serial_port;
+    private:
+        serial::serialstream *m_serialStream;
 
     };
 

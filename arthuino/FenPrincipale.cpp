@@ -29,18 +29,34 @@
 namespace arthuino
 {
 
-    FenPrincipale::FenPrincipale(QWidget *parent) : QWidget(parent)
+    FenPrincipale::FenPrincipale
+    (
+        QWidget *parent
+    ) : 
+    QWidget(parent)
     {
         setupUi(this);
 
-        serial_port = new serial::serialstream;
-        thread_read = new ReadSerialThread(serial_port);
+        m_serialStream = new serial::serialstream;
+        m_threadReader = new ReadSerialThread(m_serialStream);
 
-        connect(thread_read, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
+        connect(m_threadReader, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
     }
 
 
-    void FenPrincipale::connexion()
+    FenPrincipale::~FenPrincipale()
+    {
+        m_threadReader->terminate();
+        m_serialStream->close();
+
+        delete m_threadReader;
+        delete m_serialStream;
+    }
+
+
+    void FenPrincipale::connexion
+    (
+    )
     {
         listeMessages->append(tr("<em>Tentative de connexion en cours...</em>"));
 
@@ -69,11 +85,11 @@ namespace arthuino
             listeMessages->append(tr("<em><strong>Erreur</strong> : Probleme Baud !</em>"));
 
 
-        serial_port->open(port->text().toStdString(), optionBaud);
+        m_serialStream->open(port->text().toStdString(), optionBaud);
 
-        if (serial_port->isOpen())
+        if (m_serialStream->isOpen())
         {
-            thread_read->start();
+            m_threadReader->start();
 
             listeMessages->append(tr("<em>Connection <strong>ok</strong> !</em>"));
             boutonConnexion->setText(tr("Deconnexion"));
@@ -87,21 +103,25 @@ namespace arthuino
     }
 
 
-    void FenPrincipale::deconnexion()
+    void FenPrincipale::deconnexion
+    (
+    )
     {
-        thread_read->terminate();
-        serial_port->close();
+        m_threadReader->terminate();
+        m_serialStream->close();
 
         listeMessages->append(tr("<em>Deconnexion !</em>"));
         boutonConnexion->setText(tr("Connexion"));
     }
 
 
-    void FenPrincipale::on_boutonConnexion_clicked()
+    void FenPrincipale::on_boutonConnexion_clicked
+    (
+    )
     {
         boutonConnexion->setEnabled(false);
 
-        if (!serial_port->isOpen())
+        if (!m_serialStream->isOpen())
             connexion();
         else
             deconnexion();
@@ -110,23 +130,25 @@ namespace arthuino
     }
 
 
-    void FenPrincipale::on_boutonEnvoyer_clicked()
+    void FenPrincipale::on_boutonEnvoyer_clicked
+    (
+    )
     {
-        if (serial_port->isOpen() && !message->text().isEmpty())
+        if (m_serialStream->isOpen() && !message->text().isEmpty())
         {
             std::string maChaine(message->text().toStdString());
 
             if(nouvelleLigne->checkState() == Qt::Checked)
                 maChaine += '\n';
 
-            serial_port->write(maChaine);
+            m_serialStream->write(maChaine);
 
             listeMessages->append("<- " + message->text());
 
             message->clear();
             message->setFocus();
         }
-        else if (!serial_port->isOpen())
+        else if (!m_serialStream->isOpen())
         {
             listeMessages->append(tr("<em><strong>Erreur</strong> : Aucune connection !</em>"));
             message->setFocus();
@@ -144,29 +166,39 @@ namespace arthuino
     }
 
 
-    void FenPrincipale::on_message_returnPressed()
+    void FenPrincipale::on_message_returnPressed
+    (
+    )
     {
         on_boutonEnvoyer_clicked();
     }
 
 
-    void FenPrincipale::on_port_returnPressed()
+    void FenPrincipale::on_port_returnPressed
+    (
+    )
     {
         on_boutonConnexion_clicked();
     }
 
 
-    void FenPrincipale::writeMessage(const QString &message)
+    void FenPrincipale::writeMessage
+    (
+        const QString &message
+    )
     {
         listeMessages->append("<strong>>> </strong> " + message);
     }
 
 
-    void FenPrincipale::closeEvent(QCloseEvent *event)
+    void FenPrincipale::closeEvent
+    (
+        QCloseEvent *event
+    )
     {
-        thread_read->terminate();
-        thread_read->wait();
-        serial_port->close();
+        m_threadReader->terminate();
+        m_threadReader->wait();
+        m_serialStream->close();
         event->accept();
     }
 

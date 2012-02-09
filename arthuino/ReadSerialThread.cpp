@@ -32,7 +32,7 @@ namespace arthuino
     (
         serial::serialstream *serial
     ) : 
-    serial_port(serial)
+    m_serialStream(serial)
     {
 
     }
@@ -45,7 +45,7 @@ namespace arthuino
         std::string maChaine;
         forever
         {
-            maChaine = serial_port->read();
+            maChaine = m_serialStream->read();
             emit message( QString::fromStdString(maChaine) );
         }
     }
