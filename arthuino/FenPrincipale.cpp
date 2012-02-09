@@ -131,9 +131,20 @@ namespace arthuino
             plusMoinsBouton->setText("Plus...");
             configurationsAvancees->hide();
         }
-
-
     }
+
+
+    void FenPrincipale::on_utiliserMFR120U_clicked()
+    {
+        port->setText("/dev/ttyUSB0");
+
+        commencerSTXBox->setChecked(true);
+        finirCRBox->setChecked(true);
+
+        enleverSTXBox->setChecked(true);
+        enleverCRBox->setChecked(true);
+    }
+
 
     void FenPrincipale::on_boutonConnexion_clicked
     (
@@ -163,11 +174,11 @@ namespace arthuino
             if(commencerSTXBox->isChecked())
                 maChaine = char(2) + maChaine;
 
-            if(termineLigneBox->isChecked())
-                maChaine += '\n';
-
             if(finirCRBox->isChecked())
                 maChaine += char(13);
+
+            if(finirLFBox->isChecked())
+                maChaine += '\n';
 
             m_serialStream->write(maChaine);
 
@@ -210,10 +221,18 @@ namespace arthuino
 
     void FenPrincipale::writeMessage
     (
-        const QString &message
+        const QString &messageRead
     )
     {
-        listeMessages->append("<strong>>> </strong> " + message);
+        std::string str = messageRead.toStdString();
+
+        if(enleverSTXBox->isChecked())
+            str.erase( str.begin() );
+
+        if(enleverCRBox->isChecked())
+            str.erase( --str.end() );
+
+        listeMessages->append("<strong>>> </strong> " + QString::fromStdString(str));
     }
 
 

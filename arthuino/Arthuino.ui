@@ -188,24 +188,72 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_6">
       <item>
-       <widget class="QCheckBox" name="termineLigneBox">
+       <widget class="QCheckBox" name="finirLFBox">
         <property name="text">
-         <string>Termine la ligne</string>
+         <string>Finir par LF</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="commencerSTXBox">
-        <property name="text">
-         <string>Commencer par STX</string>
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="title">
+         <string>MFR120U</string>
         </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="finirCRBox">
-        <property name="text">
-         <string>Finir par CR</string>
-        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_8">
+         <item>
+          <widget class="QPushButton" name="utiliserMFR120U">
+           <property name="text">
+            <string>Utiliser réglages MFR120U</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="envoiMFR120U">
+           <property name="title">
+            <string>Envoi</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="QCheckBox" name="commencerSTXBox">
+              <property name="text">
+               <string>Commencer par STX</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="finirCRBox">
+              <property name="text">
+               <string>Finir par CR</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="receptionMFR120">
+           <property name="title">
+            <string>Réception</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="QCheckBox" name="enleverSTXBox">
+              <property name="text">
+               <string>Enlever préfixe STX</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="enleverCRBox">
+              <property name="text">
+               <string>Enlever suffixe CR</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item>
@@ -216,7 +264,7 @@
         <property name="sizeHint" stdset="0">
          <size>
           <width>20</width>
-          <height>40</height>
+          <height>248</height>
          </size>
         </property>
        </spacer>

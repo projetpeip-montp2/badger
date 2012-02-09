@@ -31,7 +31,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <sstream>
 #include <stdexcept>
 
 namespace serial
@@ -107,9 +106,7 @@ namespace priv
     {
         struct termios opt; // Déclaration de la struct termios pour les options.
 
-        std::ostringstream oss;
-        oss << port;
-        m_outputFile = ::open( oss.str().c_str(), O_RDWR | O_NOCTTY | O_NDELAY );
+        m_outputFile = ::open( port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY );
 
         tcgetattr(m_outputFile, &opt); // On récupère les paramètres actuels.
         

@@ -46,13 +46,14 @@ namespace arthuino
 
     private slots:
         void on_plusMoinsBouton_clicked();
+        void on_utiliserMFR120U_clicked();
 
         void on_boutonConnexion_clicked();
         void on_boutonEnvoyer_clicked();
         void on_message_returnPressed();
         void on_port_returnPressed();
 
-        void writeMessage(const QString &message);
+        void writeMessage(const QString &messageRead);
 
         void closeEvent(QCloseEvent *event);
 
