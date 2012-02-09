@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Copyright (C) 2009-2010 HIAIRRASSARY
+// Copyright (C) 2009-2012 HIAIRRASSARY
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -34,9 +34,9 @@ namespace arthuino
         setupUi(this);
 
         serial_port = new serial::serialstream;
-        thread_read = new ReadSerialThread(this, serial_port);
+        thread_read = new ReadSerialThread(serial_port);
 
-        //connect(thread_read, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
+        connect(thread_read, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
     }
 
 

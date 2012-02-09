@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Copyright (C) 2009-2010 HIAIRRASSARY
+// Copyright (C) 2009-2012 HIAIRRASSARY
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -24,19 +24,17 @@
 
 #include <QString>
 
-#include <iostream>
 #include <string>
 
 namespace arthuino
 {
     ReadSerialThread::ReadSerialThread
     (
-        FenPrincipale *win,
         serial::serialstream *serial
     ) : 
     serial_port(serial)
     {
-        connect(this, SIGNAL(message(QString)), win, SLOT(writeMessage(QString)));    
+
     }
 
 
@@ -48,9 +46,6 @@ namespace arthuino
         forever
         {
             maChaine = serial_port->read();
-
-            std::cout << "eee : " << maChaine << std::endl;
-
             emit message( QString::fromStdString(maChaine) );
         }
     }

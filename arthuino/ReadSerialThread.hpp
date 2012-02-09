@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Copyright (C) 2009-2010 HIAIRRASSARY
+// Copyright (C) 2009-2012 HIAIRRASSARY
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -29,14 +29,12 @@ class QString;
 
 namespace arthuino
 {
-    class FenPrincipale;
-
     class ReadSerialThread : public QThread
     {
         Q_OBJECT
 
         public:
-            ReadSerialThread(FenPrincipale *win, serial::serialstream *serial);
+            ReadSerialThread(serial::serialstream *serial);
 
         protected:
             void run();
