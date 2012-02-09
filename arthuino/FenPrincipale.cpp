@@ -26,137 +26,149 @@
 
 #include <string>
 
-using namespace std;
-
-FenPrincipale::FenPrincipale(QWidget *parent) : QWidget(parent)
+namespace arthuino
 {
-    setupUi(this);
 
-    serial_port = new serial::serialstream;
-    thread_read = new ReadSerialThread(this, serial_port);
-}
-
-void FenPrincipale::connexion()
-{
-    listeMessages->append(tr("<em>Tentative de connexion en cours...</em>"));
-
-
-    serial::BaudRate optionBaud(serial::BaudRate::BAUD_9600);
-
-    if (baud->currentText() == "300 baud")
-        optionBaud = serial::BaudRate::BAUD_300;
-    else if (baud->currentText() == "1200 baud")
-        optionBaud = serial::BaudRate::BAUD_1200;
-    else if (baud->currentText() == "2400 baud")
-        optionBaud = serial::BaudRate::BAUD_2400;
-    else if (baud->currentText() == "4800 baud")
-        optionBaud = serial::BaudRate::BAUD_4800;
-    else if (baud->currentText() == "9600 baud")
-        optionBaud = serial::BaudRate::BAUD_9600;
-    else if (baud->currentText() == "19200 baud")
-        optionBaud = serial::BaudRate::BAUD_19200;
-    else if (baud->currentText() == "38400 baud")
-        optionBaud = serial::BaudRate::BAUD_38400;
-    else if (baud->currentText() == "57600 baud")
-        optionBaud = serial::BaudRate::BAUD_57600;
-    else if (baud->currentText() == "115200 baud")
-        optionBaud = serial::BaudRate::BAUD_115200;
-    else
-        listeMessages->append(tr("<em><strong>Erreur</strong> : Probleme Baud !</em>"));
-
-
-    serial_port->open(port->text().toStdString(), optionBaud);
-
-    if (serial_port->isOpen())
+    FenPrincipale::FenPrincipale(QWidget *parent) : QWidget(parent)
     {
-        thread_read->start();
+        setupUi(this);
 
-        listeMessages->append(tr("<em>Connection <strong>ok</strong> !</em>"));
-        boutonConnexion->setText(tr("Deconnexion"));
+        serial_port = new serial::serialstream;
+        thread_read = new ReadSerialThread(this, serial_port);
 
-        message->setFocus();
+        //connect(thread_read, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
     }
-    else
+
+
+    void FenPrincipale::connexion()
     {
-        listeMessages->append(tr("<em>Connection <strong>wrong</strong> !</em>"));
+        listeMessages->append(tr("<em>Tentative de connexion en cours...</em>"));
+
+
+        serial::BaudRate optionBaud(serial::BaudRate::BAUD_9600);
+
+        if (baud->currentText() == "300 baud")
+            optionBaud = serial::BaudRate::BAUD_300;
+        else if (baud->currentText() == "1200 baud")
+            optionBaud = serial::BaudRate::BAUD_1200;
+        else if (baud->currentText() == "2400 baud")
+            optionBaud = serial::BaudRate::BAUD_2400;
+        else if (baud->currentText() == "4800 baud")
+            optionBaud = serial::BaudRate::BAUD_4800;
+        else if (baud->currentText() == "9600 baud")
+            optionBaud = serial::BaudRate::BAUD_9600;
+        else if (baud->currentText() == "19200 baud")
+            optionBaud = serial::BaudRate::BAUD_19200;
+        else if (baud->currentText() == "38400 baud")
+            optionBaud = serial::BaudRate::BAUD_38400;
+        else if (baud->currentText() == "57600 baud")
+            optionBaud = serial::BaudRate::BAUD_57600;
+        else if (baud->currentText() == "115200 baud")
+            optionBaud = serial::BaudRate::BAUD_115200;
+        else
+            listeMessages->append(tr("<em><strong>Erreur</strong> : Probleme Baud !</em>"));
+
+
+        serial_port->open(port->text().toStdString(), optionBaud);
+
+        if (serial_port->isOpen())
+        {
+            thread_read->start();
+
+            listeMessages->append(tr("<em>Connection <strong>ok</strong> !</em>"));
+            boutonConnexion->setText(tr("Deconnexion"));
+
+            message->setFocus();
+        }
+        else
+        {
+            listeMessages->append(tr("<em>Connection <strong>wrong</strong> !</em>"));
+        }
     }
-}
 
-void FenPrincipale::deconnexion()
-{
-    thread_read->terminate();
-    serial_port->close();
 
-    listeMessages->append(tr("<em>Deconnexion !</em>"));
-    boutonConnexion->setText(tr("Connexion"));
-}
-
-void FenPrincipale::on_boutonConnexion_clicked()
-{
-    boutonConnexion->setEnabled(false);
-
-    if (!serial_port->isOpen())
-        connexion();
-    else
-        deconnexion();
-
-    boutonConnexion->setEnabled(true);
-}
-
-void FenPrincipale::on_boutonEnvoyer_clicked()
-{
-    if (serial_port->isOpen() && !message->text().isEmpty())
+    void FenPrincipale::deconnexion()
     {
-        string maChaine(message->text().toStdString());
+        thread_read->terminate();
+        serial_port->close();
 
-        if(nouvelleLigne->checkState() == Qt::Checked)
-            maChaine += '\n';
-
-        serial_port->write(maChaine);
-
-        listeMessages->append("<- " + message->text());
-
-        message->clear();
-        message->setFocus();
+        listeMessages->append(tr("<em>Deconnexion !</em>"));
+        boutonConnexion->setText(tr("Connexion"));
     }
-    else if (!serial_port->isOpen())
+
+
+    void FenPrincipale::on_boutonConnexion_clicked()
     {
-        listeMessages->append(tr("<em><strong>Erreur</strong> : Aucune connection !</em>"));
-        message->setFocus();
+        boutonConnexion->setEnabled(false);
+
+        if (!serial_port->isOpen())
+            connexion();
+        else
+            deconnexion();
+
+        boutonConnexion->setEnabled(true);
     }
-    else if (message->text().isEmpty())
+
+
+    void FenPrincipale::on_boutonEnvoyer_clicked()
     {
-        listeMessages->append(tr("<em><strong>Erreur</strong> : Aucune commande !</em>"));
-        message->setFocus();
+        if (serial_port->isOpen() && !message->text().isEmpty())
+        {
+            std::string maChaine(message->text().toStdString());
+
+            if(nouvelleLigne->checkState() == Qt::Checked)
+                maChaine += '\n';
+
+            serial_port->write(maChaine);
+
+            listeMessages->append("<- " + message->text());
+
+            message->clear();
+            message->setFocus();
+        }
+        else if (!serial_port->isOpen())
+        {
+            listeMessages->append(tr("<em><strong>Erreur</strong> : Aucune connection !</em>"));
+            message->setFocus();
+        }
+        else if (message->text().isEmpty())
+        {
+            listeMessages->append(tr("<em><strong>Erreur</strong> : Aucune commande !</em>"));
+            message->setFocus();
+        }
+        else
+        {
+            listeMessages->append(tr("<em><strong>Erreur</strong> !</em>"));
+            message->setFocus();
+        }
     }
-    else
+
+
+    void FenPrincipale::on_message_returnPressed()
     {
-        listeMessages->append(tr("<em><strong>Erreur</strong> !</em>"));
-        message->setFocus();
+        on_boutonEnvoyer_clicked();
     }
-}
-
-void FenPrincipale::on_message_returnPressed()
-{
-    on_boutonEnvoyer_clicked();
-}
-
-void FenPrincipale::on_port_returnPressed()
-{
-    on_boutonConnexion_clicked();
-}
-
-void FenPrincipale::writeMessage(const QString &message)
-{
-    listeMessages->append("<strong>>> </strong> " + message);
-}
-
-void FenPrincipale::closeEvent(QCloseEvent *event)
-{
-    thread_read->terminate();
-    thread_read->wait();
-    serial_port->close();
-    event->accept();
-}
 
 
+    void FenPrincipale::on_port_returnPressed()
+    {
+        on_boutonConnexion_clicked();
+    }
+
+
+    void FenPrincipale::writeMessage(const QString &message)
+    {
+        listeMessages->append("<strong>>> </strong> " + message);
+    }
+
+
+    void FenPrincipale::closeEvent(QCloseEvent *event)
+    {
+        thread_read->terminate();
+        thread_read->wait();
+        serial_port->close();
+        event->accept();
+    }
+
+
+} // namespace arthuino

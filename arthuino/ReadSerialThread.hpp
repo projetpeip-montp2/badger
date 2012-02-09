@@ -23,33 +23,34 @@
 
 #include <QThread>
 
-#include <iostream>
-#include <string>
-
 #include "../serial/include/SerialStream.hpp"
 
-class FenPrincipale;
 class QString;
 
-class ReadSerialThread : public QThread
+namespace arthuino
 {
-    Q_OBJECT
+    class FenPrincipale;
 
-    public:
-        ReadSerialThread(FenPrincipale *parent, serial::serialstream *serial);
+    class ReadSerialThread : public QThread
+    {
+        Q_OBJECT
 
-    protected:
-        void run();
+        public:
+            ReadSerialThread(FenPrincipale *win, serial::serialstream *serial);
 
-    signals:
-       void message(const QString &);
+        protected:
+            void run();
 
-    private:
-        serial::serialstream *serial_port;
+        signals:
+           void message(const QString &);
 
-};
+        private:
+            serial::serialstream *serial_port;
+
+    };
+
+} // namespace arthuino 
 
 
 #endif // ARTHUINO_READSERIALTHREAD_HPP
-
 

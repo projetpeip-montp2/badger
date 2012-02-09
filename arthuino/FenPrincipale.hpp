@@ -27,35 +27,38 @@
 
 #include "../serial/include/SerialStream.hpp"
 
-class ReadSerialThread;
-
-class FenPrincipale : public QWidget, private Ui::Arthuino
+namespace arthuino
 {
-    Q_OBJECT
+    class ReadSerialThread;
 
-    public:
-        FenPrincipale(QWidget *parent = 0);
+    class FenPrincipale : public QWidget, private Ui::Arthuino
+    {
+        Q_OBJECT
 
-    private:
-        void connexion();
-        void deconnexion();
+        public:
+            FenPrincipale(QWidget *parent = 0);
 
-    private slots:
-        void on_boutonConnexion_clicked();
-        void on_boutonEnvoyer_clicked();
-        void on_message_returnPressed();
-        void on_port_returnPressed();
+        private:
+            void connexion();
+            void deconnexion();
 
-        void writeMessage(const QString &message);
+        private slots:
+            void on_boutonConnexion_clicked();
+            void on_boutonEnvoyer_clicked();
+            void on_message_returnPressed();
+            void on_port_returnPressed();
 
-        void closeEvent(QCloseEvent *event);
+            void writeMessage(const QString &message);
 
-    private:
-        serial::serialstream *serial_port;
-        ReadSerialThread *thread_read;
+            void closeEvent(QCloseEvent *event);
 
-};
+        private:
+            serial::serialstream *serial_port;
+            ReadSerialThread *thread_read;
 
+    };
+
+} // namespace arthuino
 
 #endif // ARTHUINO_FENPRINCIPALE_HPP
 

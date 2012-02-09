@@ -24,23 +24,35 @@
 
 #include <QString>
 
-using namespace std;
+#include <iostream>
+#include <string>
 
-ReadSerialThread::ReadSerialThread(FenPrincipale *parent, serial::serialstream *serial)
+namespace arthuino
 {
-    serial_port = serial;
-
-    connect(this, SIGNAL(message(QString)), parent, SLOT(writeMessage(QString)));
-}
-
-void ReadSerialThread::run()
-{
-    string maChaine;
-    forever
+    ReadSerialThread::ReadSerialThread
+    (
+        FenPrincipale *win,
+        serial::serialstream *serial
+    ) : 
+    serial_port(serial)
     {
-        maChaine = serial_port->read();
-        emit message( QString::fromStdString(maChaine) );
+        connect(this, SIGNAL(message(QString)), win, SLOT(writeMessage(QString)));    
     }
-}
 
 
+    void ReadSerialThread::run
+    (
+    )
+    {
+        std::string maChaine;
+        forever
+        {
+            maChaine = serial_port->read();
+
+            std::cout << "eee : " << maChaine << std::endl;
+
+            emit message( QString::fromStdString(maChaine) );
+        }
+    }
+
+} // namespace arthuino
