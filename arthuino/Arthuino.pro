@@ -10,7 +10,7 @@ DEPENDPATH += . ../serial/src/ ../serial/src/Linux ../serial/include/
 INCLUDEPATH += . ../serial/include/ ../serial/include/Linux
 
 # Input
-HEADERS += FenPrincipale.h ReadSerialThread.h SerialStream.hpp SerialStreamImpl.hpp SerialStreamImplLinux.hpp
+HEADERS += FenPrincipale.hpp ReadSerialThread.hpp SerialStream.hpp SerialStreamImpl.hpp SerialStreamImplLinux.hpp
 
 FORMS += Arthuino.ui
 

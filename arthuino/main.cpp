@@ -3,7 +3,7 @@
 #include <QLocale>
 #include <QLibraryInfo>
 
-#include "FenPrincipale.h"
+#include "FenPrincipale.hpp"
 
 int main(int argc, char* argv[])
 {

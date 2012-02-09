@@ -18,9 +18,13 @@
 // Boston, MA 02110-1301 USA
 ////////////////////////////////////////////////////////////
 
-#include "FenPrincipale.h"
+#include "FenPrincipale.hpp"
 
-#include "ReadSerialThread.h"
+#include "ReadSerialThread.hpp"
+
+#include <QtGui>
+
+#include <string>
 
 using namespace std;
 

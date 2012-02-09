@@ -18,14 +18,12 @@
 // Boston, MA 02110-1301 USA
 ////////////////////////////////////////////////////////////
 
-#ifndef FENPRINCIPALE_H
-#define FENPRINCIPALE_H
+#ifndef ARTHUINO_FENPRINCIPALE_HPP
+#define ARTHUINO_FENPRINCIPALE_HPP
 
-#include <QtGui>
+#include <QWidget>
+
 #include "ui_Arthuino.h"
-
-#include <iostream>
-#include <string>
 
 #include "../serial/include/SerialStream.hpp"
 
@@ -37,10 +35,12 @@ class FenPrincipale : public QWidget, private Ui::Arthuino
 
     public:
         FenPrincipale(QWidget *parent = 0);
+
+    private:
         void connexion();
         void deconnexion();
 
-    public slots:
+    private slots:
         void on_boutonConnexion_clicked();
         void on_boutonEnvoyer_clicked();
         void on_message_returnPressed();
@@ -48,7 +48,6 @@ class FenPrincipale : public QWidget, private Ui::Arthuino
 
         void writeMessage(const QString &message);
 
-    protected:
         void closeEvent(QCloseEvent *event);
 
     private:
@@ -58,6 +57,6 @@ class FenPrincipale : public QWidget, private Ui::Arthuino
 };
 
 
-#endif // FENPRINCIPALE_H
+#endif // ARTHUINO_FENPRINCIPALE_HPP
 
 

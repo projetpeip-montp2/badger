@@ -18,11 +18,10 @@
 // Boston, MA 02110-1301 USA
 ////////////////////////////////////////////////////////////
 
-#ifndef READSERIALTHREAD_H
-#define READSERIALTHREAD_H
+#ifndef ARTHUINO_READSERIALTHREAD_HPP
+#define ARTHUINO_READSERIALTHREAD_HPP
 
 #include <QThread>
-#include <QtCore>
 
 #include <iostream>
 #include <string>
@@ -30,6 +29,7 @@
 #include "../serial/include/SerialStream.hpp"
 
 class FenPrincipale;
+class QString;
 
 class ReadSerialThread : public QThread
 {
@@ -50,6 +50,6 @@ class ReadSerialThread : public QThread
 };
 
 
-#endif // READSERIALTHREAD_H
+#endif // ARTHUINO_READSERIALTHREAD_HPP
 
 
