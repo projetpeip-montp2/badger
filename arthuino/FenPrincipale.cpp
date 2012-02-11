@@ -40,7 +40,7 @@ namespace arthuino
         m_serialStream = new serial::serialstream;
         m_threadReader = new ReadSerialThread(m_serialStream);
 
-        connect(m_threadReader, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
+        connect(m_threadReader, SIGNAL(message(const QByteArray&)), this, SLOT(writeMessage(const QByteArray&)));
 
         connect(plusMoinsBouton, SIGNAL(toggled(bool)), reglagesAvances, SLOT(setVisible(bool)));
         reglagesAvances->setVisible(false);
@@ -92,6 +92,7 @@ namespace arthuino
 
         if (m_serialStream->isOpen())
         {
+            m_threadReader->setTerminaisonByte('\r');
             m_threadReader->start();
 
             listeMessages->append(tr("<em>Connection <strong>ok</strong> !</em>"));
@@ -151,20 +152,25 @@ namespace arthuino
     {
         if (m_serialStream->isOpen() && !message->text().isEmpty())
         {
-            std::string maChaine(message->text().toStdString());
-
             listeMessages->append("<- " + message->text());
 
+            std::vector<serial::byte> maChaine;
+        
+            std::string tmp = message->text().toStdString();
+
+            for(unsigned int i(0); i!=tmp.size(); ++i)
+                maChaine.insert(maChaine.begin(), tmp[i]);
+
             if(commencerSTXBox->isChecked())
-                maChaine = char(2) + maChaine;
+                maChaine.insert(maChaine.begin(), 2);
 
             if(finirCRBox->isChecked())
-                maChaine += char(13);
+                maChaine.push_back(13);
 
             if(finirLFBox->isChecked())
-                maChaine += '\n';
+                maChaine.push_back('\n');
 
-            m_serialStream->write(maChaine);
+            m_serialStream->writeBytes(maChaine);
 
             message->clear();
             message->setFocus();
@@ -205,18 +211,20 @@ namespace arthuino
 
     void FenPrincipale::writeMessage
     (
-        const QString &messageRead
+        const QByteArray &messageRead
     )
     {
-        std::string str = messageRead.toStdString();
+        std::vector<serial::byte> tmp(messageRead.data(), messageRead.data()+messageRead.count());
 
         if(enleverSTXBox->isChecked())
-            str.erase( str.begin() );
+            tmp.erase( tmp.begin() );
 
         if(enleverCRBox->isChecked())
-            str.erase( --str.end() );
+            tmp.erase( --tmp.end() );
 
-        listeMessages->append("<strong>>> </strong> " + QString::fromStdString(str));
+        tmp.push_back('\0');
+
+        listeMessages->append("<strong>>> </strong> " + QString(&tmp[0]));
     }
 
 

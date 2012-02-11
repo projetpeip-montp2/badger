@@ -32,9 +32,20 @@ namespace arthuino
     (
         serial::serialstream *serial
     ) : 
-    m_serialStream(serial)
+    m_serialStream(serial),
+    m_terminaisonByte('\r')
     {
 
+    }
+
+
+
+    void ReadSerialThread::setTerminaisonByte
+    (
+        serial::byte terminaisonByte
+    )
+    {
+        m_terminaisonByte = terminaisonByte;
     }
 
 
@@ -42,11 +53,16 @@ namespace arthuino
     (
     )
     {
-        std::string maChaine;
+        // Dans ce thread, on lis en permanence les données envoyées par 
+        // le module. Dès quelles se finissent par '\r', on envoie tout 
+        // sur l'IHM.
+        // On passe par un QByteArray à cause du système de signaux de Qt
+        std::vector<serial::byte> dataRead;
         forever
         {
-            maChaine = m_serialStream->read();
-            emit message( QString::fromStdString(maChaine) );
+            dataRead = m_serialStream->readBytes(m_terminaisonByte);
+
+            emit message( QByteArray(&dataRead[0], dataRead.size()) );
         }
     }
 

@@ -52,7 +52,7 @@ namespace arthuino
         void on_message_returnPressed();
         void on_port_returnPressed();
 
-        void writeMessage(const QString &messageRead);
+        void writeMessage(const QByteArray &messageRead);
 
         void closeEvent(QCloseEvent *event);
 

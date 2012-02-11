@@ -102,17 +102,18 @@ namespace serial
     }
 
 
-    std::string serialstream::read
+    std::vector<byte> serialstream::readBytes
     (
+        byte terminaisonByte
     )
     {
         checkAvailablity();
 
-        return m_serialImpl->read();
+        return m_serialImpl->readBytes(terminaisonByte);
     }
 
 
-    char serialstream::readByte
+    byte serialstream::readByte
     (
     )
     {
@@ -122,25 +123,25 @@ namespace serial
     }
 
 
-    void serialstream::write
+    void serialstream::writeBytes
     (
-        std::string str
+        const std::vector<byte> &b
     )
     {
         checkAvailablity();
 
-        m_serialImpl->write(str);
+        m_serialImpl->writeBytes(b);
     }
 
 
     void serialstream::writeByte
     (
-        char byte
+        byte b
     )
     {
         checkAvailablity();
 
-        m_serialImpl->writeByte(byte);
+        m_serialImpl->writeByte(b);
     }
 
 

@@ -152,19 +152,20 @@ namespace priv
     }
 
 
-    std::string serialstreamImplLinux::read
+    std::vector<byte> serialstreamImplLinux::readBytes
     (
+        byte terminaisonByte
     )
     {
-        std::string result("");
-        unsigned char next_byte(0);
+        std::vector<byte> result;
+        byte next_byte(0);
 
         do
         {
             if( (::read( m_outputFile, &next_byte, 1 ) > 0)) // Read() it next_byte (peut contenir '\n').
             {
                 if( next_byte != '\n' && next_byte != '\r' )
-                    result += next_byte;
+                    result.push_back(next_byte);
             }
         }
         while( next_byte != '\n' ); // '\' est le byte terminateur.
@@ -173,7 +174,7 @@ namespace priv
     }
 
 
-    char serialstreamImplLinux::readByte
+    byte serialstreamImplLinux::readByte
     (
     )
     {
@@ -194,15 +195,15 @@ namespace priv
     }
 
 
-    void serialstreamImplLinux::write
+    void serialstreamImplLinux::writeBytes
     (
-        std::string str
+        const std::vector<byte> &b
     )
     {
         ssize_t num_of_bytes_written(-1);
         do
         {
-            num_of_bytes_written = ::write( m_outputFile, str.c_str(),  static_cast<int>(str.size()) );
+            num_of_bytes_written = ::write( m_outputFile, &b[0],  static_cast<int>(b.size()) );
         }
         while( ( num_of_bytes_written < 0 ) );
     }
@@ -210,13 +211,13 @@ namespace priv
 
     void serialstreamImplLinux::writeByte
     (
-        char byte
+        byte b
     )
     {
         ssize_t num_of_bytes_written(-1);
         do
         {
-            num_of_bytes_written = ::write( m_outputFile, &byte, 1 );
+            num_of_bytes_written = ::write( m_outputFile, &b, 1 );
         }
         while( ( num_of_bytes_written < 0 ) );
     }

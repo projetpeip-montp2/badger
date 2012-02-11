@@ -50,11 +50,11 @@ namespace priv
 
         virtual bool isOpen() = 0;
 
-        virtual std::string read() = 0;
-        virtual char readByte() = 0;
+        virtual std::vector<byte> readBytes(byte terminaisonByte) = 0;
+        virtual byte readByte() = 0;
 
-        virtual void write(std::string str) = 0;
-        virtual void writeByte(char byte) = 0;
+        virtual void writeBytes(const std::vector<byte> &b) = 0;
+        virtual void writeByte(byte b) = 0;
     };
 
 

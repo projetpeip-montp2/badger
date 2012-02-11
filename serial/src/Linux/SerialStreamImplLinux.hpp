@@ -57,11 +57,11 @@ namespace priv
 
         virtual bool isOpen();
 
-        virtual std::string read();
-        virtual char readByte();
+        virtual std::vector<byte> readBytes(byte terminaisonByte);
+        virtual byte readByte();
 
-        virtual void write(std::string str);
-        virtual void writeByte(char byte);
+        virtual void writeBytes(const std::vector<byte> &b);
+        virtual void writeByte(byte b);
 
     private:
         speed_t retrieveBaudRate(BaudRate baud) const;

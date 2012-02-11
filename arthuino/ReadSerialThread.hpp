@@ -36,14 +36,17 @@ namespace arthuino
     public:
         ReadSerialThread(serial::serialstream *serial);
 
+        void setTerminaisonByte(serial::byte terminaisonByte);
+
     protected:
         void run();
 
     signals:
-       void message(const QString &);
+       void message(const QByteArray &);
 
     private:
         serial::serialstream *m_serialStream;
+        serial::byte m_terminaisonByte;
 
     };
 

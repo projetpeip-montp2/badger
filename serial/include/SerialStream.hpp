@@ -32,9 +32,12 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace serial
 {
+    typedef char byte;
+
     enum class BaudRate
     {
         BAUD_50,
@@ -79,11 +82,11 @@ namespace serial
 
             bool isOpen();
 
-            std::string read();
-            char readByte();
+            std::vector<byte> readBytes(byte terminaisonByte);
+            byte readByte();
 
-            void write(std::string str);
-            void writeByte(char byte);
+            void writeBytes(const std::vector<byte> &b);
+            void writeByte(byte b);
 
         private:
             void checkAvailablity() const;
