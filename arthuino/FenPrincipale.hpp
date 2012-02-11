@@ -45,7 +45,6 @@ namespace arthuino
         void deconnexion();
 
     private slots:
-        void on_plusMoinsBouton_clicked();
         void on_utiliserMFR120U_clicked();
 
         void on_boutonConnexion_clicked();

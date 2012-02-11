@@ -42,8 +42,8 @@ namespace arthuino
 
         connect(m_threadReader, SIGNAL(message(QString)), this, SLOT(writeMessage(QString)));
 
-        plusMoinsBouton->setText("Plus...");
-        configurationsAvancees->hide();
+        connect(plusMoinsBouton, SIGNAL(toggled(bool)), reglagesAvances, SLOT(setVisible(bool)));
+        reglagesAvances->setVisible(false);
     }
 
 
@@ -115,22 +115,6 @@ namespace arthuino
 
         listeMessages->append(tr("<em>Deconnexion !</em>"));
         boutonConnexion->setText(tr("Connexion"));
-    }
-
-
-    void FenPrincipale::on_plusMoinsBouton_clicked()
-    {
-        if(plusMoinsBouton->isChecked())
-        {
-            plusMoinsBouton->setText("Moins...");
-            configurationsAvancees->show();
-        }
-
-        else
-        {
-            plusMoinsBouton->setText("Plus...");
-            configurationsAvancees->hide();
-        }
     }
 
 
