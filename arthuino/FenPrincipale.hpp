@@ -50,7 +50,6 @@ namespace arthuino
         void on_boutonConnexion_clicked();
         void on_boutonEnvoyer_clicked();
         void on_message_returnPressed();
-        void on_port_returnPressed();
 
         void writeMessage(const QByteArray &messageRead);
 

@@ -25,6 +25,8 @@
 #include <QtGui>
 
 #include <string>
+#include <thread>
+#include <chrono>
 
 namespace arthuino
 {
@@ -49,8 +51,7 @@ namespace arthuino
 
     FenPrincipale::~FenPrincipale()
     {
-        m_threadReader->terminate();
-        m_serialStream->close();
+        deconnexion();
 
         delete m_threadReader;
         delete m_serialStream;
@@ -92,7 +93,7 @@ namespace arthuino
 
         if (m_serialStream->isOpen())
         {
-            m_threadReader->setTerminaisonByte('\r');
+            m_threadReader->setTerminaisonByte('\n');
             m_threadReader->start();
 
             listeMessages->append(tr("<em>Connection <strong>ok</strong> !</em>"));
@@ -112,6 +113,7 @@ namespace arthuino
     )
     {
         m_threadReader->terminate();
+        m_threadReader->wait();
         m_serialStream->close();
 
         listeMessages->append(tr("<em>Deconnexion !</em>"));
@@ -173,23 +175,18 @@ namespace arthuino
             m_serialStream->writeBytes(maChaine);
 
             message->clear();
-            message->setFocus();
         }
-        else if (!m_serialStream->isOpen())
-        {
+
+        else if(!m_serialStream->isOpen())
             listeMessages->append(tr("<em><strong>Erreur</strong> : Aucune connection !</em>"));
-            message->setFocus();
-        }
-        else if (message->text().isEmpty())
-        {
+
+        else if(message->text().isEmpty())
             listeMessages->append(tr("<em><strong>Erreur</strong> : Aucune commande !</em>"));
-            message->setFocus();
-        }
+
         else
-        {
             listeMessages->append(tr("<em><strong>Erreur</strong> !</em>"));
-            message->setFocus();
-        }
+
+        message->setFocus();
     }
 
 
@@ -198,14 +195,6 @@ namespace arthuino
     )
     {
         on_boutonEnvoyer_clicked();
-    }
-
-
-    void FenPrincipale::on_port_returnPressed
-    (
-    )
-    {
-        on_boutonConnexion_clicked();
     }
 
 
@@ -224,7 +213,7 @@ namespace arthuino
 
         tmp.push_back('\0');
 
-        listeMessages->append("<strong>>> </strong> " + QString(&tmp[0]));
+        listeMessages->append("<strong>>> </strong> \"" + QString(&tmp[0]) + '"');
     }
 
 
@@ -233,9 +222,8 @@ namespace arthuino
         QCloseEvent *event
     )
     {
-        m_threadReader->terminate();
-        m_threadReader->wait();
-        m_serialStream->close();
+        deconnexion();
+
         event->accept();
     }
 

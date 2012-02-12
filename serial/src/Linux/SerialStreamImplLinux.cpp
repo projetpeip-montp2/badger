@@ -157,18 +157,18 @@ namespace priv
         byte terminaisonByte
     )
     {
+        // Problème : Que se passe-t-il si à la première lecture échoue et 
+        // que terminaisonByte == '0' (valeur par défaut) ?????
+
         std::vector<byte> result;
         byte next_byte(0);
 
         do
         {
-            if( (::read( m_outputFile, &next_byte, 1 ) > 0)) // Read() it next_byte (peut contenir '\n').
-            {
-                if( next_byte != '\n' && next_byte != '\r' )
-                    result.push_back(next_byte);
-            }
+            if(::read(m_outputFile, &next_byte, 1) > 0)
+                result.push_back(next_byte);
         }
-        while( next_byte != '\n' ); // '\' est le byte terminateur.
+        while(next_byte != terminaisonByte); // '\n' est le byte terminateur.
 
         return result;
     }
@@ -178,20 +178,13 @@ namespace priv
     (
     )
     {
-        unsigned char next_byte(0);
-        int i(0);
-
-        do
+        byte b;
+        while(::read( m_outputFile, &b, 1 ) < 0)
         {
-            if( (::read( m_outputFile, &next_byte, 1 ) > 0))
-            {
-                if( next_byte != '\n' && next_byte != '\r' )
-                    i++;
-            }
+            // Rien à faire
         }
-        while( i != 1 );
 
-        return next_byte;
+        return b;
     }
 
 
@@ -200,10 +193,14 @@ namespace priv
         const std::vector<byte> &b
     )
     {
+        // Si l'écriture peut se faire en plusieurs fois, remplacer "&b[0]" 
+        // par "&b[0] + num_of_bytes_written" et la taille à écrire doit 
+        // donc diminuer de "num_of_bytes_written"
+
         ssize_t num_of_bytes_written(-1);
         do
         {
-            num_of_bytes_written = ::write( m_outputFile, &b[0],  static_cast<int>(b.size()) );
+            num_of_bytes_written = ::write(m_outputFile, &b[0],  static_cast<int>(b.size()) );
         }
         while( ( num_of_bytes_written < 0 ) );
     }
@@ -214,12 +211,10 @@ namespace priv
         byte b
     )
     {
-        ssize_t num_of_bytes_written(-1);
-        do
+        while(::write(m_outputFile, &b, 1) < 0)
         {
-            num_of_bytes_written = ::write( m_outputFile, &b, 1 );
+            // Rien à faire
         }
-        while( ( num_of_bytes_written < 0 ) );
     }
 
 
