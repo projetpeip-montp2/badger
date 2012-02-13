@@ -26,6 +26,7 @@
 
 #include <string>
 #include <thread>
+#include <iostream>
 #include <chrono>
 
 namespace arthuino
@@ -161,7 +162,7 @@ namespace arthuino
             std::string tmp = message->text().toStdString();
 
             for(unsigned int i(0); i!=tmp.size(); ++i)
-                maChaine.insert(maChaine.begin(), tmp[i]);
+                maChaine.push_back(tmp[i]);
 
             if(commencerSTXBox->isChecked())
                 maChaine.insert(maChaine.begin(), 2);
@@ -171,6 +172,12 @@ namespace arthuino
 
             if(finirLFBox->isChecked())
                 maChaine.push_back('\n');
+
+            for(unsigned int i(0); i<maChaine.size(); ++i)
+            {
+                std::cout << "byte ASCII:" << maChaine[i] << "      INT:" << static_cast<int>(maChaine[i]) << std::endl;
+            }
+            std::cout << "Envoyer :)" << std::endl << std::endl;
 
             m_serialStream->writeBytes(maChaine);
 

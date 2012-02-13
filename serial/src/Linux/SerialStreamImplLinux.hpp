@@ -69,6 +69,8 @@ namespace priv
         static std::map<BaudRate, speed_t> m_baudRates;
 
         int m_outputFile;
+
+        struct termios m_oldConfig;
     };
 
 

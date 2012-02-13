@@ -108,10 +108,61 @@ namespace priv
 
         m_outputFile = ::open( port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY );
 
+        tcgetattr(m_outputFile, &m_oldConfig); // On récupère les paramètres actuels.
         tcgetattr(m_outputFile, &opt); // On récupère les paramètres actuels.
         
+        //cfmakeraw(&opt); // FAKE
         cfsetispeed(&opt, retrieveBaudRate(baud)); // On règle la vitesse en entrée et en sortie.
         cfsetospeed(&opt, retrieveBaudRate(baud));
+
+
+        opt.c_cflag|=CREAD|CLOCAL;
+        opt.c_lflag&=(~(ICANON|ECHO|ECHOE|ECHOK|ECHONL|ISIG));
+        //opt.c_iflag&=(~(INPCK|IGNPAR|PARMRK|ISTRIP|ICRNL|IXANY));
+        opt.c_oflag&=(~OPOST);
+        opt.c_cc[VMIN]= 0;
+
+
+#ifdef _POSIX_VDISABLE  // Is a disable character available on this system?
+        // Some systems allow for per-device disable-characters, so get the
+        //  proper value for the configured device
+        const long vdisable = fpathconf(m_outputFile, _PC_VDISABLE);
+        opt.c_cc[VINTR] = vdisable;
+        opt.c_cc[VQUIT] = vdisable;
+        opt.c_cc[VSTART] = vdisable;
+        opt.c_cc[VSTOP] = vdisable;
+        opt.c_cc[VSUSP] = vdisable;
+#endif //_POSIX_VDISABLE
+
+
+        opt.c_cflag&=(~CSIZE);
+        opt.c_cflag|=CS8;
+        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+
+
+        opt.c_cflag&=(~PARENB);
+        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+
+        opt.c_cflag&=(~CSTOPB);
+        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+
+
+        opt.c_cflag&=(~CRTSCTS);
+        opt.c_iflag&=(~(IXON|IXOFF|IXANY));
+        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+
+
+        struct timeval Posix_Copy_Timeout;
+        Posix_Copy_Timeout.tv_sec = 500 / 1000;
+        Posix_Copy_Timeout.tv_usec = 500 % 1000;
+            fcntl(m_outputFile, F_SETFL, O_SYNC);
+        tcgetattr(m_outputFile, &opt);
+
+        opt.c_cc[VTIME] = 500/100;
+        tcsetattr(m_outputFile, TCSAFLUSH, & opt);
+
+        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+
 
         opt.c_cflag &= ~CSIZE; // 8 bits de données.
         opt.c_cflag |= CS8;
@@ -120,15 +171,13 @@ namespace priv
 
         opt.c_cflag &= ~CSTOPB; // Un bit de stop.
 
-    ////////// TEST //////////
         opt.c_cc[VMIN] = 1;
         opt.c_cc[VTIME] = 0;
-    ////////// TEST //////////
 
-        if ( tcsetattr(m_outputFile, TCSANOW, &opt) != 0 ) // On envoie les nouveaux paramètres.
-        {
+
+        // On envoie les nouveaux paramètres.
+        if (tcsetattr(m_outputFile, TCSANOW, &opt) != 0)
             std::cerr << "Problème : -> Configuration <-" << std::endl;
-        }
     }
 
 
@@ -138,6 +187,8 @@ namespace priv
     {
         if(m_outputFile != -1)
         {
+            tcsetattr(m_outputFile, TCSAFLUSH | TCSANOW, &m_oldConfig);
+
             ::close(m_outputFile);
             m_outputFile = -1;
         }
@@ -193,16 +244,12 @@ namespace priv
         const std::vector<byte> &b
     )
     {
-        // Si l'écriture peut se faire en plusieurs fois, remplacer "&b[0]" 
-        // par "&b[0] + num_of_bytes_written" et la taille à écrire doit 
-        // donc diminuer de "num_of_bytes_written"
-
-        ssize_t num_of_bytes_written(-1);
+        ssize_t num_of_bytes_written(0);
         do
         {
-            num_of_bytes_written = ::write(m_outputFile, &b[0],  static_cast<int>(b.size()) );
+            num_of_bytes_written = ::write(m_outputFile, &b[0]+num_of_bytes_written,  static_cast<int>(b.size())-num_of_bytes_written);
         }
-        while( ( num_of_bytes_written < 0 ) );
+        while( ( num_of_bytes_written < static_cast<int>(b.size()) ) );
     }
 
 
