@@ -27,8 +27,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////
 
-#ifndef SERIAL_SERIALSTREAMIMPLLINUX_HPP
-#define SERIAL_SERIALSTREAMIMPLLINUX_HPP
+#ifndef SERIAL_SERIALSTREAMIMPLPOSIX_HPP
+#define SERIAL_SERIALSTREAMIMPLPOSIX_HPP
 
 #include <string>
 #include <fcntl.h>
@@ -44,18 +44,30 @@ namespace serial
 namespace priv
 {
 
-    class serialstreamImplLinux : public serialstreamImpl
+    class serialstreamImplPosix : public serialstreamImpl
     {
     public:
-        serialstreamImplLinux();
-        serialstreamImplLinux(std::string port, BaudRate baud);
+        serialstreamImplPosix();
+        serialstreamImplPosix(std::string port);
 
-        virtual ~serialstreamImplLinux();
+        virtual ~serialstreamImplPosix();
 
-        virtual void open(std::string port, BaudRate baud);
+        virtual void open(std::string port);
         virtual void close();
 
         virtual bool isOpen();
+
+        virtual void setBaudRate(BaudRate rate);
+
+        virtual void setDataBits(DataBits data);
+
+        virtual void setStopBits(StopBits stop);
+
+        virtual void setParity(Parity parity);
+
+        virtual void setFlowControl(FlowControl flow);
+
+        virtual void setTimeout(int timeout);
 
         virtual std::vector<byte> readBytes(byte terminaisonByte);
         virtual byte readByte();
@@ -66,11 +78,14 @@ namespace priv
     private:
         speed_t retrieveBaudRate(BaudRate baud) const;
 
+        void updateConfig();
+
         static std::map<BaudRate, speed_t> m_baudRates;
 
         int m_outputFile;
 
         struct termios m_oldConfig;
+        struct termios m_currentConfig;
     };
 
 
@@ -78,5 +93,5 @@ namespace priv
 
 } // namespace serial
 
-#endif // SERIAL_SERIALSTREAMIMPLLINUX_HPP
+#endif // SERIAL_SERIALSTREAMIMPLPOSIX_HPP
 

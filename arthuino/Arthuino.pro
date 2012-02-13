@@ -6,12 +6,12 @@ QMAKE_CXXFLAGS += -std=c++0x
 
 TEMPLATE = app
 TARGET = 
-DEPENDPATH += . ../serial/src/ ../serial/src/Linux ../serial/include/
-INCLUDEPATH += . ../serial/include/ ../serial/include/Linux
+DEPENDPATH += . ../serial/src/ ../serial/src/Posix ../serial/include/
+INCLUDEPATH += . ../serial/include/ ../serial/include/Posix
 
 # Input
-HEADERS += FenPrincipale.hpp ReadSerialThread.hpp SerialStream.hpp SerialStreamImpl.hpp SerialStreamImplLinux.hpp
+HEADERS += FenPrincipale.hpp ReadSerialThread.hpp SerialStream.hpp SerialStreamImpl.hpp SerialStreamImplPosix.hpp
 
 FORMS += Arthuino.ui
 
-SOURCES += FenPrincipale.cpp main.cpp ReadSerialThread.cpp SerialStream.cpp SerialStreamImpl.cpp SerialStreamImplLinux.cpp
+SOURCES += FenPrincipale.cpp main.cpp ReadSerialThread.cpp SerialStream.cpp SerialStreamImpl.cpp SerialStreamImplPosix.cpp

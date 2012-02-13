@@ -27,7 +27,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////
 
-#include "SerialStreamImplLinux.hpp"
+#include "SerialStreamImplPosix.hpp"
 
 #include <algorithm>
 #include <iostream>
@@ -38,7 +38,7 @@ namespace serial
 
 namespace priv
 {
-	std::map<BaudRate, speed_t> serialstreamImplLinux::m_baudRates = 
+	std::map<BaudRate, speed_t> serialstreamImplPosix::m_baudRates = 
     {
         std::make_pair(BaudRate::BAUD_50,     B50),
         std::make_pair(BaudRate::BAUD_75,     B75),
@@ -70,7 +70,7 @@ namespace priv
 
 
 
-    serialstreamImplLinux::serialstreamImplLinux
+    serialstreamImplPosix::serialstreamImplPosix
     (
     ) :
     m_outputFile(-1)
@@ -79,18 +79,17 @@ namespace priv
     }
 
 
-    serialstreamImplLinux::serialstreamImplLinux
+    serialstreamImplPosix::serialstreamImplPosix
     (
-        std::string port, 
-        BaudRate baud
+        std::string port
     ) :
     m_outputFile(-1)
     {
-        open(port, baud);
+        open(port);
     }
 
 
-    serialstreamImplLinux::~serialstreamImplLinux
+    serialstreamImplPosix::~serialstreamImplPosix
     (
     )
     {
@@ -98,90 +97,90 @@ namespace priv
     }
 
 
-    void serialstreamImplLinux::open
+    void serialstreamImplPosix::open
     (
-        std::string port, 
-        BaudRate baud
+        std::string port
     )
     {
-        struct termios opt; // Déclaration de la struct termios pour les options.
+        m_outputFile = ::open( port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
 
-        m_outputFile = ::open( port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY );
+        // On sauvegarde les paramètres actuels.
+        tcgetattr(m_outputFile, &m_oldConfig); 
 
-        tcgetattr(m_outputFile, &m_oldConfig); // On récupère les paramètres actuels.
-        tcgetattr(m_outputFile, &opt); // On récupère les paramètres actuels.
+        tcgetattr(m_outputFile, &m_currentConfig);
         
-        //cfmakeraw(&opt); // FAKE
-        cfsetispeed(&opt, retrieveBaudRate(baud)); // On règle la vitesse en entrée et en sortie.
-        cfsetospeed(&opt, retrieveBaudRate(baud));
+/*
+        cfsetispeed(&m_currentConfig, B19200);
+        cfsetospeed(&m_currentConfig, B19200);
 
 
-        opt.c_cflag|=CREAD|CLOCAL;
-        opt.c_lflag&=(~(ICANON|ECHO|ECHOE|ECHOK|ECHONL|ISIG));
-        //opt.c_iflag&=(~(INPCK|IGNPAR|PARMRK|ISTRIP|ICRNL|IXANY));
-        opt.c_oflag&=(~OPOST);
-        opt.c_cc[VMIN]= 0;
+        m_currentConfig.c_cflag|=CREAD|CLOCAL;
+        m_currentConfig.c_lflag&=(~(ICANON|ECHO|ECHOE|ECHOK|ECHONL|ISIG));
+        //m_currentConfig.c_iflag&=(~(INPCK|IGNPAR|PARMRK|ISTRIP|ICRNL|IXANY));
+        m_currentConfig.c_oflag&=(~OPOST);
+        m_currentConfig.c_cc[VMIN]= 0;
 
 
 #ifdef _POSIX_VDISABLE  // Is a disable character available on this system?
         // Some systems allow for per-device disable-characters, so get the
         //  proper value for the configured device
         const long vdisable = fpathconf(m_outputFile, _PC_VDISABLE);
-        opt.c_cc[VINTR] = vdisable;
-        opt.c_cc[VQUIT] = vdisable;
-        opt.c_cc[VSTART] = vdisable;
-        opt.c_cc[VSTOP] = vdisable;
-        opt.c_cc[VSUSP] = vdisable;
+        m_currentConfig.c_cc[VINTR] = vdisable;
+        m_currentConfig.c_cc[VQUIT] = vdisable;
+        m_currentConfig.c_cc[VSTART] = vdisable;
+        m_currentConfig.c_cc[VSTOP] = vdisable;
+        m_currentConfig.c_cc[VSUSP] = vdisable;
 #endif //_POSIX_VDISABLE
 
 
-        opt.c_cflag&=(~CSIZE);
-        opt.c_cflag|=CS8;
-        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+        m_currentConfig.c_cflag&=(~CSIZE);
+        m_currentConfig.c_cflag|=CS8;
+        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
 
 
-        opt.c_cflag&=(~PARENB);
-        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+        m_currentConfig.c_cflag&=(~PARENB);
+        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
 
-        opt.c_cflag&=(~CSTOPB);
-        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+        m_currentConfig.c_cflag&=(~CSTOPB);
+        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
 
 
-        opt.c_cflag&=(~CRTSCTS);
-        opt.c_iflag&=(~(IXON|IXOFF|IXANY));
-        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
+        m_currentConfig.c_cflag&=(~CRTSCTS);
+        m_currentConfig.c_iflag&=(~(IXON|IXOFF|IXANY));
+        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
 
 
         struct timeval Posix_Copy_Timeout;
         Posix_Copy_Timeout.tv_sec = 500 / 1000;
         Posix_Copy_Timeout.tv_usec = 500 % 1000;
             fcntl(m_outputFile, F_SETFL, O_SYNC);
-        tcgetattr(m_outputFile, &opt);
+        tcgetattr(m_outputFile, &m_currentConfig);
 
-        opt.c_cc[VTIME] = 500/100;
-        tcsetattr(m_outputFile, TCSAFLUSH, & opt);
+        m_currentConfig.c_cc[VTIME] = 500/100;
 
-        tcsetattr(m_outputFile, TCSAFLUSH, &opt);
-
-
-        opt.c_cflag &= ~CSIZE; // 8 bits de données.
-        opt.c_cflag |= CS8;
-
-        opt.c_cflag &= ~PARENB; // Pas de bit de parité.
-
-        opt.c_cflag &= ~CSTOPB; // Un bit de stop.
-
-        opt.c_cc[VMIN] = 1;
-        opt.c_cc[VTIME] = 0;
+        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
 
 
+        m_currentConfig.c_cflag &= ~CSIZE; // 8 bits de données.
+        m_currentConfig.c_cflag |= CS8;
+
+        m_currentConfig.c_cflag &= ~PARENB; // Pas de bit de parité.
+
+        m_currentConfig.c_cflag &= ~CSTOPB; // Un bit de stop.
+
+        m_currentConfig.c_cc[VMIN] = 1;
+        m_currentConfig.c_cc[VTIME] = 0;
+*/
+
+/*
         // On envoie les nouveaux paramètres.
-        if (tcsetattr(m_outputFile, TCSANOW, &opt) != 0)
+        if (tcsetattr(m_outputFile, TCSANOW, &m_currentConfig) != 0)
             std::cerr << "Problème : -> Configuration <-" << std::endl;
+*/
     }
 
 
-    void serialstreamImplLinux::close
+    void serialstreamImplPosix::close
     (
     )
     {
@@ -195,7 +194,7 @@ namespace priv
     }
 
 
-    bool serialstreamImplLinux::isOpen
+    bool serialstreamImplPosix::isOpen
     (
     )
     {
@@ -203,7 +202,7 @@ namespace priv
     }
 
 
-    std::vector<byte> serialstreamImplLinux::readBytes
+    std::vector<byte> serialstreamImplPosix::readBytes
     (
         byte terminaisonByte
     )
@@ -225,7 +224,7 @@ namespace priv
     }
 
 
-    byte serialstreamImplLinux::readByte
+    byte serialstreamImplPosix::readByte
     (
     )
     {
@@ -239,7 +238,7 @@ namespace priv
     }
 
 
-    void serialstreamImplLinux::writeBytes
+    void serialstreamImplPosix::writeBytes
     (
         const std::vector<byte> &b
     )
@@ -253,7 +252,7 @@ namespace priv
     }
 
 
-    void serialstreamImplLinux::writeByte
+    void serialstreamImplPosix::writeByte
     (
         byte b
     )
@@ -274,7 +273,127 @@ namespace priv
 
 
 
-    speed_t serialstreamImplLinux::retrieveBaudRate
+    void serialstreamImplPosix::setBaudRate
+    (
+        BaudRate rate
+    )
+    {
+        cfsetispeed(&m_currentConfig, retrieveBaudRate(rate));
+        cfsetospeed(&m_currentConfig, retrieveBaudRate(rate));
+
+        updateConfig();
+    }
+
+
+    void serialstreamImplPosix::setDataBits
+    (
+        DataBits data
+    )
+    {
+        switch(data)
+        {
+            case DataBits::HeightBits:
+                m_currentConfig.c_cflag &= (~CSIZE);
+                m_currentConfig.c_cflag |= CS8;
+                break;
+        }
+
+        updateConfig();
+    }
+
+
+    void serialstreamImplPosix::setStopBits
+    (
+        StopBits stop
+    )
+    {
+        switch(stop)
+        {
+            case StopBits::OneBit:
+                m_currentConfig.c_cflag &= (~CSTOPB);
+                break;
+        }
+
+        updateConfig();
+    }
+
+
+    void serialstreamImplPosix::setParity
+    (
+        Parity parity
+    )
+    {
+        switch(parity)
+        {
+            case Parity::None:
+                m_currentConfig.c_cflag &= (~PARENB);
+                break;
+        }
+
+        updateConfig();
+    }
+
+
+    void serialstreamImplPosix::setFlowControl
+    (
+        FlowControl flow
+    )
+    {
+        switch(flow)
+        {
+            case FlowControl::Off:
+                m_currentConfig.c_cflag&=(~CRTSCTS);
+                m_currentConfig.c_iflag&=(~(IXON|IXOFF|IXANY));
+                break;
+        }
+
+
+        updateConfig();
+    }
+
+
+    void serialstreamImplPosix::setTimeout
+    (
+        int timeout
+    )
+    {
+/*
+        struct timeval Posix_Copy_Timeout;
+        Posix_Copy_Timeout.tv_sec = timeout / 1000;
+
+        Posix_Copy_Timeout.tv_usec = timeout % 1000;
+            fcntl(m_outputFile, F_SETFL, O_SYNC);
+        tcgetattr(m_outputFile, &m_currentConfig);
+
+
+        m_currentConfig.c_cc[VTIME] = timeout/100;
+*/
+
+        fcntl(m_outputFile, F_SETFL, O_SYNC);
+        m_currentConfig.c_cc[VTIME] = timeout/100;
+
+        updateConfig();
+    }
+
+
+    void serialstreamImplPosix::updateConfig
+    (
+    )
+    {
+        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    speed_t serialstreamImplPosix::retrieveBaudRate
     (
         BaudRate baud
     ) const

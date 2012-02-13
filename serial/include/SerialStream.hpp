@@ -62,6 +62,30 @@ namespace serial
     };
 
 
+    enum class DataBits
+    {
+        HeightBits
+    };
+
+
+    enum class StopBits
+    {
+        OneBit
+    };
+
+
+    enum class Parity
+    {
+        None
+    };
+
+
+    enum class FlowControl
+    {
+        Off
+    };
+
+
     namespace priv
     {
         class serialstreamImpl;
@@ -73,14 +97,32 @@ namespace serial
     {
         public:
             serialstream();
-            serialstream(std::string port, BaudRate baud);
+            serialstream(std::string port);
 
             ~serialstream();
 
-            void open(std::string port, BaudRate baud);
+            void open(std::string port);
             void close();
 
             bool isOpen();
+
+            void setBaudRate(BaudRate rate);
+            BaudRate getBaudRate() const;
+
+            void setDataBits(DataBits data);
+            DataBits getDataBits() const;
+
+            void setStopBits(StopBits stop);
+            StopBits getStopBits() const;
+
+            void setParity(Parity parity);
+            Parity getParity() const;
+
+            void setFlowControl(FlowControl flow);
+            FlowControl getFlowControl() const;
+
+            void setTimeout(int timeout);
+            int getTimeout() const;
 
             std::vector<byte> readBytes(byte terminaisonByte);
             byte readByte();
@@ -89,7 +131,17 @@ namespace serial
             void writeByte(byte b);
 
         private:
+            BaudRate    m_baudRate;
+            DataBits    m_dataBits;
+            StopBits    m_stopBits;
+            Parity      m_parity;
+            FlowControl m_flow;
+
+            int m_timeout;
+
             void checkAvailablity() const;
+
+            void commonsInitializations();
 
             std::shared_ptr<priv::serialstreamImpl> m_serialImpl;
     };

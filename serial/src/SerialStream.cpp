@@ -28,13 +28,14 @@
 ////////////////////////////////////////////////////////////
 
 #include "SerialStream.hpp"
+#include "Platform.hpp"
 
 #include <stdexcept>
 
 
-#if defined(linux) || defined(__linux)
-    #include "Linux/SerialStreamImplLinux.hpp"
-    typedef serial::priv::serialstreamImplLinux SerialStreamImplType;
+#if defined(SERIAL_SYSTEM_LINUX) || defined(SERIAL_SYSTEM_FREEBSD) || defined(SERIAL_SYSTEM_MACOS)
+    #include "Posix/SerialStreamImplPosix.hpp"
+    typedef serial::priv::serialstreamImplPosix SerialStreamImplType;
 #else
     #error "Unsupported Platform"
 #endif
@@ -46,17 +47,17 @@ namespace serial
     (
     )
     {
-
+        commonsInitializations();
     }
 
 
     serialstream::serialstream
     (
-        std::string port, 
-        BaudRate baud
+        std::string port
     )
     {
-        open(port, baud);
+        commonsInitializations();
+        open(port);
     }
 
 
@@ -70,13 +71,19 @@ namespace serial
 
     void serialstream::open
     (
-        std::string port, 
-        BaudRate baud
+        std::string port
     )
     {
         close();
 
-        m_serialImpl = std::make_shared<SerialStreamImplType>(port, baud);
+        m_serialImpl = std::make_shared<SerialStreamImplType>(port);
+
+        setBaudRate(m_baudRate);
+        setDataBits(m_dataBits);
+        setStopBits(m_stopBits);
+        setParity(m_parity);
+        setFlowControl(m_flow);
+        setTimeout(m_timeout);
     }
 
 
@@ -145,12 +152,136 @@ namespace serial
     }
 
 
+    void serialstream::setBaudRate
+    (
+        BaudRate rate
+    )
+    {
+        checkAvailablity();
+
+        m_serialImpl->setBaudRate(rate);
+    }
+
+
+    BaudRate serialstream::getBaudRate
+    (
+    ) const
+    {
+        return m_baudRate;
+    }
+
+    void serialstream::setDataBits
+    (
+        DataBits data
+    )
+    {
+        checkAvailablity();
+
+        m_serialImpl->setDataBits(data);
+    }
+
+
+    DataBits serialstream::getDataBits
+    (
+    ) const
+    {
+        return m_dataBits;
+    }
+
+    void serialstream::setStopBits
+    (
+        StopBits stop
+    )
+    {
+        checkAvailablity();
+
+        m_serialImpl->setStopBits(stop);
+    }
+
+    StopBits serialstream::getStopBits
+    (
+    ) const
+    {
+        return m_stopBits;
+    }
+
+
+    void serialstream::setParity
+    (
+        Parity parity
+    )
+    {
+        checkAvailablity();
+
+        m_serialImpl->setParity(parity);
+    }
+
+
+    Parity serialstream::getParity
+    (
+    ) const
+    {
+        return m_parity;
+    }
+
+
+    void serialstream::setFlowControl
+    (
+        FlowControl flow
+    )
+    {
+        checkAvailablity();
+
+        m_serialImpl->setFlowControl(flow);
+    }
+
+
+    FlowControl serialstream::getFlowControl
+    (
+    ) const
+    {
+        return m_flow;
+    }
+
+
+    void serialstream::setTimeout
+    (
+        int timeout
+    )
+    {
+        checkAvailablity();
+
+        m_serialImpl->setTimeout(timeout);
+    }
+
+
+    int serialstream::getTimeout
+    (
+    ) const
+    {
+        return m_timeout;
+    }
+
+
     void serialstream::checkAvailablity
     (
     ) const
     {
         if(!m_serialImpl || !m_serialImpl->isOpen())
             throw std::runtime_error("Serial port isn't open");
+    }
+
+
+    void serialstream::commonsInitializations
+    (
+    )
+    {
+        m_baudRate = BaudRate::BAUD_19200;
+        m_dataBits = DataBits::HeightBits;
+        m_stopBits = StopBits::OneBit;
+        m_parity = Parity::None;
+        m_flow = FlowControl::Off;
+        m_timeout = 500;
     }
 
 } // namespace serial

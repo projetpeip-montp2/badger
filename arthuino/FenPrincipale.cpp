@@ -90,7 +90,13 @@ namespace arthuino
             listeMessages->append(tr("<em><strong>Erreur</strong> : Probleme Baud !</em>"));
 
 
-        m_serialStream->open(port->text().toStdString(), optionBaud);
+        m_serialStream->open(port->text().toStdString());
+        m_serialStream->setBaudRate(optionBaud);
+        m_serialStream->setDataBits(serial::DataBits::HeightBits);
+        m_serialStream->setStopBits(serial::StopBits::OneBit);
+        m_serialStream->setParity(serial::Parity::None);
+        m_serialStream->setFlowControl(serial::FlowControl::Off);
+        m_serialStream->setTimeout(500);
 
         if (m_serialStream->isOpen())
         {
@@ -172,12 +178,6 @@ namespace arthuino
 
             if(finirLFBox->isChecked())
                 maChaine.push_back('\n');
-
-            for(unsigned int i(0); i<maChaine.size(); ++i)
-            {
-                std::cout << "byte ASCII:" << maChaine[i] << "      INT:" << static_cast<int>(maChaine[i]) << std::endl;
-            }
-            std::cout << "Envoyer :)" << std::endl << std::endl;
 
             m_serialStream->writeBytes(maChaine);
 

@@ -27,52 +27,31 @@
 // POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////
 
-#ifndef SERIAL_SERIALSTREAMIMPL_HPP
-#define SERIAL_SERIALSTREAMIMPL_HPP
+#ifndef SERIAL_PLATFORM_HPP
+#define SERIAL_PLATFORM_HPP
 
-#include <string>
+#if defined(_WIN32) || defined(__WIN32__)
+    // Windows
+    #define SERIAL_SYSTEM_WINDOWS
+    #error Windows is not supported
 
-#include "SerialStream.hpp"
+#elif defined(linux) || defined(__linux)
+    // Linux
+    #define SERIAL_SYSTEM_LINUX
 
-namespace serial
-{
+#elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
+    // MacOS
+    #define SERIAL_SYSTEM_MACOS
 
-namespace priv
-{
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+    // FreeBSD
+    #define SERIAL_SYSTEM_FREEBSD
 
-    class serialstreamImpl
-    {
-    public:
-        virtual ~serialstreamImpl();
-
-        virtual void open(std::string port) = 0;
-        virtual void close() = 0;
-
-        virtual bool isOpen() = 0;
-
-        virtual void setBaudRate(BaudRate rate) = 0;
-
-        virtual void setDataBits(DataBits data) = 0;
-
-        virtual void setStopBits(StopBits stop) = 0;
-
-        virtual void setParity(Parity parity) = 0;
-
-        virtual void setFlowControl(FlowControl flow) = 0;
-
-        virtual void setTimeout(int timeout) = 0;
-
-        virtual std::vector<byte> readBytes(byte terminaisonByte) = 0;
-        virtual byte readByte() = 0;
-
-        virtual void writeBytes(const std::vector<byte> &b) = 0;
-        virtual void writeByte(byte b) = 0;
-    };
+#else
+    // Unsupported system
+    #error This operating system is not supported by serial library
+#endif
 
 
-} // namespace priv
-
-} // namespace serial
-
-#endif // SERIAL_SERIALSTREAMIMPL_HPP
+#endif // SERIAL_PLATFORM_HPP
 
