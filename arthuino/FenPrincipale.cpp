@@ -47,6 +47,7 @@ namespace arthuino
 
         connect(plusMoinsBouton, SIGNAL(toggled(bool)), reglagesAvances, SLOT(setVisible(bool)));
         reglagesAvances->setVisible(false);
+        plusMoinsBouton->click();
     }
 
 

@@ -5,4 +5,9 @@ arthuino/moc_*.cpp
 arthuino/ui_*.h
 
 serial/src/*.o
-serial/src/Linux/*.o
+serial/src/Posix/*.o
+
+badger/src/*.o
+badger/badger
+
+console/*.o
