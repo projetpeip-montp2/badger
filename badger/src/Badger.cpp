@@ -92,7 +92,7 @@ namespace badger
 
 
         std::cout << "==================================" << std::endl;
-        std::cout << "    Welcome on badger program    " << std::endl;
+        std::cout << "    Welcome to badger program    " << std::endl;
         std::cout << std::endl;
         std::cout << "To get available options, type '?'" << std::endl;
         std::cout << "==================================" << std::endl;
