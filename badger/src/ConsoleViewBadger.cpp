@@ -60,11 +60,8 @@ namespace badger
         bool visible
     )   
     {
-        if(visible)
-            std::cout << "Console enable" << std::endl;
-
-        else
-            std::cout << "Console disable" << std::endl;
+        std::string hack( int(visible), 'a');
+        hack.push_back(3);
     }
 
 
@@ -74,7 +71,7 @@ namespace badger
     )    
     {
         if(result != "")
-            std::cout << std::endl << result << std::endl;
+            std::cout << result << std::endl;
     }
 
 
@@ -99,7 +96,7 @@ namespace badger
         const std::string &message
     )      
     {
-        std::cout << std::endl << message << std::endl;
+        std::cout << message << std::endl;
     }
 
 

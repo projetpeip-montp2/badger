@@ -57,23 +57,25 @@ namespace badger
 
         void close();
 
-        bool login(const std::string &password);
+        std::string login(const std::string &password);
 
-        void logout();
+        std::string logout();
 
-        void next();
+        std::string next();
 
-        void rollback();
+        std::string rollback();
 
-        void erase();
+        std::string erase();
 
-        void count();
+        std::string count();
 
         void quit();
 
         void needLogin(const std::string &command);
 
-        bool tryToLogin();
+        std::string getReturnCommand();
+
+        void sendCommandOnSerial(const std::vector<serial::byte> &command);
 
     private:
         bool m_continuer;

@@ -69,26 +69,33 @@ namespace badger
         std::function<void()> closeFunction = std::bind(&Badger::logout, this);
         addCommand("close", closeFunction, false);
 
-        std::function<void(const std::string&)> loginFunction = std::bind(&Badger::login, this, std::placeholders::_1);
+        std::function<std::string(const std::string&)> loginFunction = std::bind(&Badger::login, this, std::placeholders::_1);
         addCommand("login", loginFunction, false);
 
-        std::function<void()> logoutFunction = std::bind(&Badger::logout, this);
+        std::function<std::string()> logoutFunction = std::bind(&Badger::logout, this);
         addCommand("logout", logoutFunction, false);
 
-        std::function<void()> nextFunction = std::bind(&Badger::next, this);
+        std::function<std::string()> nextFunction = std::bind(&Badger::next, this);
         addCommand("next", nextFunction, true);
 
-        std::function<void()> rollbackFunction = std::bind(&Badger::rollback, this);
+        std::function<std::string()> rollbackFunction = std::bind(&Badger::rollback, this);
         addCommand("rollback", rollbackFunction, true);
 
-        std::function<void()> eraseFunction = std::bind(&Badger::erase, this);
+        std::function<std::string()> eraseFunction = std::bind(&Badger::erase, this);
         addCommand("erase", eraseFunction, true);
 
-        std::function<void()> countFunction = std::bind(&Badger::count, this);
+        std::function<std::string()> countFunction = std::bind(&Badger::count, this);
         addCommand("count", countFunction, false);
 
         std::function<void()> quitFunction = std::bind(&Badger::quit, this);
         addCommand("quit", quitFunction, false);
+
+
+        std::cout << "==================================" << std::endl;
+        std::cout << "    Welcome on badger program    " << std::endl;
+        std::cout << std::endl;
+        std::cout << "To get available options, type '?'" << std::endl;
+        std::cout << "==================================" << std::endl;
     }
 
 
@@ -109,7 +116,7 @@ namespace badger
         const std::string &port
     )
     {
-        std::cout << "open : " << port << std::endl;
+        m_serial.open(port);
     }
 
 
@@ -117,58 +124,114 @@ namespace badger
     (
     )
     {
-        std::cout << "close" << std::endl;
+        m_serial.close();
     }
 
 
-    bool Badger::login
+    std::string Badger::login
     (
         const std::string &password
     )
     {
-        std::cout << "login : " << password << std::endl;
+        std::vector<serial::byte> command;
+        command.push_back('L');
 
-        return false;
+        for(unsigned int i(0); i<password.size(); ++i)
+            command.push_back(password[i]);
+
+        sendCommandOnSerial(command);
+        std::string result = getReturnCommand();
+
+        m_logged = (result == "A") ? true : false;
+
+        return (result == "A") ? "You are logged now" : "Error during login";
     }
 
 
-    void Badger::logout
+    std::string Badger::logout
     (
     )
     {
-        std::cout << "logout" << std::endl;
+        std::vector<serial::byte> command;
+        command.push_back('O');
+
+        sendCommandOnSerial(command);
+        std::string result = getReturnCommand();
+
+        if(result == "A")
+            m_logged = false;
+
+        return (result == "A") ? "" : "Error during logout";
     }
 
 
-    void Badger::next
+    std::string Badger::next
     (
     )
     {
-        std::cout << "next" << std::endl;
+        std::vector<serial::byte> command;
+        command.push_back('G');
+
+        sendCommandOnSerial(command);
+        std::string result = getReturnCommand();
+
+        return (result == "E") ? "Database is empty or finish (try rollback maybe)" : "Next result :" + result.erase(0,1);
     }
 
 
-    void Badger::rollback
+    std::string Badger::rollback
     (
     )
     {
-        std::cout << "rollback" << std::endl;
+        std::vector<serial::byte> command;
+        command.push_back('R');
+
+        sendCommandOnSerial(command);
+        std::string result = getReturnCommand();
+
+        return (result == "A") ? "" : "Rollback impossible";
     }
 
 
-    void Badger::erase
+    std::string Badger::erase
     (
     )
     {
-        std::cout << "erase" << std::endl;
+        std::string answer;
+        std::string result;
+
+        std::cout << "Do you really want to erase all database (yes)? ";
+        std::getline(std::cin, answer);
+
+        if(answer == "yes")
+        {
+            std::cout << "Information: erase duration < 60 seconds";
+
+            std::vector<serial::byte> command;
+            command.push_back('E');
+
+            sendCommandOnSerial(command);
+
+            result = getReturnCommand();
+        }
+
+        return (result == "A") ? "" : "Erase impossible";
+
     }
 
 
-    void Badger::count
+    std::string Badger::count
     (
     )
     {
-        std::cout << "count" << std::endl;
+        std::vector<serial::byte> command;
+        command.push_back('N');
+
+        sendCommandOnSerial(command);
+        std::string result = getReturnCommand();
+        result.erase(result.begin());
+
+        return "There are " + result + " records";
     }
 
 
@@ -197,7 +260,7 @@ namespace badger
         // Don't change order of this if :)
         if(it != m_access.end() && m_access[nameFunction] && !m_logged)
         {
-            std::cout << "DEBUG: Cette fonction nécessite d'être root: " << nameFunction << std::endl;
+            std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
 
             while(continueToLogin)
             {
@@ -206,7 +269,9 @@ namespace badger
                 std::cout << "Password : ";
                 std::getline(std::cin, password);
 
-                if(login(password))
+                login(password);
+
+                if(m_logged)
                 {
                     sendCommand(m_console, command);
                     continueToLogin = false;
@@ -227,6 +292,40 @@ namespace badger
 
         else
             sendCommand(m_console, command);
+    }
+
+
+    std::string Badger::getReturnCommand
+    (
+    )
+    {
+        std::vector<serial::byte> result = m_serial.readBytes('\n');
+
+        //if(result.front() != serial::byte(2) || result.back() != serial::byte(13))
+            //throw std::runtime_error("The return command don't begin by STX or don't end by CR");
+
+        result.erase( result.begin() );
+        result.erase( --result.end() );
+        result.push_back('\0');
+
+        return std::string(&result[0]);
+    }
+
+
+    void Badger::sendCommandOnSerial
+    (
+        const std::vector<serial::byte> &command
+    )
+    {
+        auto tmp = command;
+
+        // Add STX to begin
+        tmp.insert(tmp.begin(), 2);
+
+        // Add CR to end
+        tmp.push_back(13);
+
+        m_serial.writeBytes(tmp);
     }
 
 
