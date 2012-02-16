@@ -108,19 +108,17 @@ namespace priv
         tcgetattr(m_outputFile, &m_oldConfig); 
 
         tcgetattr(m_outputFile, &m_currentConfig);
+
+        // On désactive un possible mode canonique
+        m_currentConfig.c_lflag = 0;
+
+        // On désactive un possible mappage (CR -> NL) ou (NL -> CR)
+        m_currentConfig.c_iflag = 0;
+
+        updateConfig();
+
         
 /*
-        cfsetispeed(&m_currentConfig, B19200);
-        cfsetospeed(&m_currentConfig, B19200);
-
-
-        m_currentConfig.c_cflag|=CREAD|CLOCAL;
-        m_currentConfig.c_lflag&=(~(ICANON|ECHO|ECHOE|ECHOK|ECHONL|ISIG));
-        //m_currentConfig.c_iflag&=(~(INPCK|IGNPAR|PARMRK|ISTRIP|ICRNL|IXANY));
-        m_currentConfig.c_oflag&=(~OPOST);
-        m_currentConfig.c_cc[VMIN]= 0;
-
-
 #ifdef _POSIX_VDISABLE  // Is a disable character available on this system?
         // Some systems allow for per-device disable-characters, so get the
         //  proper value for the configured device
@@ -131,51 +129,6 @@ namespace priv
         m_currentConfig.c_cc[VSTOP] = vdisable;
         m_currentConfig.c_cc[VSUSP] = vdisable;
 #endif //_POSIX_VDISABLE
-
-
-        m_currentConfig.c_cflag&=(~CSIZE);
-        m_currentConfig.c_cflag|=CS8;
-        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
-
-
-        m_currentConfig.c_cflag&=(~PARENB);
-        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
-
-        m_currentConfig.c_cflag&=(~CSTOPB);
-        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
-
-
-        m_currentConfig.c_cflag&=(~CRTSCTS);
-        m_currentConfig.c_iflag&=(~(IXON|IXOFF|IXANY));
-        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
-
-
-        struct timeval Posix_Copy_Timeout;
-        Posix_Copy_Timeout.tv_sec = 500 / 1000;
-        Posix_Copy_Timeout.tv_usec = 500 % 1000;
-            fcntl(m_outputFile, F_SETFL, O_SYNC);
-        tcgetattr(m_outputFile, &m_currentConfig);
-
-        m_currentConfig.c_cc[VTIME] = 500/100;
-
-        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
-
-
-        m_currentConfig.c_cflag &= ~CSIZE; // 8 bits de données.
-        m_currentConfig.c_cflag |= CS8;
-
-        m_currentConfig.c_cflag &= ~PARENB; // Pas de bit de parité.
-
-        m_currentConfig.c_cflag &= ~CSTOPB; // Un bit de stop.
-
-        m_currentConfig.c_cc[VMIN] = 1;
-        m_currentConfig.c_cc[VTIME] = 0;
-*/
-
-/*
-        // On envoie les nouveaux paramètres.
-        if (tcsetattr(m_outputFile, TCSANOW, &m_currentConfig) != 0)
-            std::cerr << "Problème : -> Configuration <-" << std::endl;
 */
     }
 
@@ -186,6 +139,7 @@ namespace priv
     {
         if(m_outputFile != -1)
         {
+            // On restore l'ancienne configuration
             tcsetattr(m_outputFile, TCSAFLUSH | TCSANOW, &m_oldConfig);
 
             ::close(m_outputFile);
@@ -218,7 +172,7 @@ namespace priv
             if(::read(m_outputFile, &next_byte, 1) > 0)
                 result.push_back(next_byte);
         }
-        while(next_byte != terminaisonByte); // '\n' est le byte terminateur.
+        while(next_byte != terminaisonByte);
 
         return result;
     }
@@ -380,7 +334,8 @@ namespace priv
     (
     )
     {
-        tcsetattr(m_outputFile, TCSAFLUSH, &m_currentConfig);
+        if(tcsetattr(m_outputFile, TCSAFLUSH | TCSANOW, &m_currentConfig) != 0)
+            std::cout << "Problème : -> Configuration <-" << std::endl;
     }
 
 

@@ -299,10 +299,10 @@ namespace badger
     (
     )
     {
-        std::vector<serial::byte> result = m_serial.readBytes('\n');
+        std::vector<serial::byte> result = m_serial.readBytes('\r');
 
-        //if(result.front() != serial::byte(2) || result.back() != serial::byte(13))
-            //throw std::runtime_error("The return command don't begin by STX or don't end by CR");
+        if(result.front() != serial::byte(2) || result.back() != serial::byte(13))
+            throw std::runtime_error("The return command don't begin by STX or don't end by CR");
 
         result.erase( result.begin() );
         result.erase( --result.end() );
