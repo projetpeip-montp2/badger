@@ -205,7 +205,7 @@ namespace badger
 
         if(answer == "yes")
         {
-            std::cout << "Information: erase duration < 60 seconds";
+            std::cout << "Information: erase duration < 60 seconds" << std::endl;
 
             std::vector<serial::byte> command;
             command.push_back('E');
