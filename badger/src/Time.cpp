@@ -164,18 +164,49 @@ namespace badger
         const Time &right
     )
     {
-        if(left.getSecond() == right.getSecond())
+        if(left.getHour() == right.getHour())
         {
             if(left.getMinute() == right.getMinute())
-                return left.getHour() < right.getHour();
+                return left.getSecond() < right.getSecond();
 
             else 
                 return left.getMinute() < right.getMinute();
         }
 
         else 
-            return left.getSecond() < right.getSecond();
+            return left.getHour() < right.getHour();
     }
+
+
+    bool operator>
+    (
+        const Time &left, 
+        const Time &right
+    )
+    {
+        return right < left;
+    }
+
+
+    bool operator<=
+    (
+        const Time &left, 
+        const Time &right
+    )
+    {
+        return !(right < left);
+    }
+
+
+    bool operator>=
+    (
+        const Time &left, 
+        const Time &right
+    )
+    {
+        return !(left < right);
+    }
+
 
 
 

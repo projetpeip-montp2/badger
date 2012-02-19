@@ -68,6 +68,12 @@ namespace badger
 
     bool operator<(const Time &left, const Time &right);
 
+    bool operator>(const Time &left, const Time &right);
+
+    bool operator<=(const Time &left, const Time &right);
+
+    bool operator>=(const Time &left, const Time &right);
+
 
     std::ostream& operator<<(std::ostream &stream, const Time &date);
 

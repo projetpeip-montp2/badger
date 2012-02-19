@@ -31,6 +31,7 @@
 
 #include "ConsoleViewBadger.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <sstream>
 
@@ -86,6 +87,9 @@ namespace badger
 
         std::function<std::string()> countFunction = std::bind(&Badger::count, this);
         addCommand("count", countFunction, false);
+
+        std::function<std::string(const Date&, const Time&, const Time&)> getFunction = std::bind(&Badger::get, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        addCommand("get", getFunction, true);
 
         std::function<void()> quitFunction = std::bind(&Badger::quit, this);
         addCommand("quit", quitFunction, false);
@@ -175,7 +179,7 @@ namespace badger
         sendCommandOnSerial(command);
         std::string result = getReturnCommand();
 
-        return (result == "E") ? "Database is empty or finish (try rollback maybe)" : "Next result :" + result.erase(0,1);
+        return (result == "E") ? "Database is empty or finish (try rollback maybe)" : result.erase(0,1);
     }
 
 
@@ -231,7 +235,36 @@ namespace badger
         std::string result = getReturnCommand();
         result.erase(result.begin());
 
-        return "There are " + result + " records";
+        return result;
+    }
+
+
+    std::string Badger::get
+    (
+        const Date &date, 
+        const Time &begin, 
+        const Time &end
+    )
+    {
+        unsigned int numberOfRecords;
+
+        std::string countStr = count();
+        std::istringstream iss(countStr);
+
+        if(!(iss >> numberOfRecords))
+            throw std::runtime_error("Unable to parse number of records");
+    
+        rollback();
+
+        for(unsigned int i(0); i<numberOfRecords; ++i)
+        {
+            Record rcd = parseRecord(next());
+
+            if(rcd.date == date && rcd.time >= begin && rcd.time <= end)
+                std::cout << rcd.date << ' ' << rcd.time << ' ' << rcd.data << std::endl;
+        }
+
+        return "";
     }
 
 
@@ -326,6 +359,30 @@ namespace badger
         tmp.push_back(13);
 
         m_serial.writeBytes(tmp);
+    }
+
+
+    Badger::Record Badger::parseRecord
+    (
+        const std::string &str
+    ) const
+    {
+
+        std::string day(str, 0, 2);
+        std::string month(str, 2, 2);
+        std::string year(str, 4, 4);
+
+        std::string hour(str, 8, 2);
+        std::string minute(str, 10, 2);
+        std::string seconde(str, 12, 2);
+
+        Record rcd;
+
+        rcd.date = Date(std::atoi(&day[0]), std::atoi(&month[0]), std::atoi(&year[0]));
+        rcd.time = Time(std::atoi(&hour[0]), std::atoi(&minute[0]), std::atoi(&seconde[0]));
+        rcd.data = std::string(str, 18);
+
+        return rcd;
     }
 
 

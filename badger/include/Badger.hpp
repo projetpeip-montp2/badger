@@ -35,11 +35,13 @@
 
 #include "Console.hpp"
 
+#include "Date.hpp"
+#include "Time.hpp"
+
 #include "SerialStream.hpp"
 
 namespace badger
 {
-
     class Badger
     {
     public:
@@ -48,6 +50,14 @@ namespace badger
         ~Badger();
 
         void run();
+
+    private:
+        struct Record
+        {
+            Date date;
+            Time time;
+            std::string data;
+        };
 
     private:
         template<typename Res, typename... Args>
@@ -69,6 +79,8 @@ namespace badger
 
         std::string count();
 
+        std::string get(const Date &date, const Time &begin, const Time &end);
+
         void quit();
 
         void needLogin(const std::string &command);
@@ -76,6 +88,8 @@ namespace badger
         std::string getReturnCommand();
 
         void sendCommandOnSerial(const std::vector<serial::byte> &command);
+
+        Record parseRecord(const std::string &str) const;
 
     private:
         bool m_continuer;
