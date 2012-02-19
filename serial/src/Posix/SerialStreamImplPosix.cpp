@@ -33,6 +33,10 @@
 #include <iostream>
 #include <stdexcept>
 
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+
 namespace serial
 {
 
@@ -103,6 +107,9 @@ namespace priv
     )
     {
         m_outputFile = ::open( port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+
+        if(m_outputFile == -1)
+            throw std::runtime_error("Unable to open the file \"" + port + '"');
 
         // On sauvegarde les paramètres actuels.
         tcgetattr(m_outputFile, &m_oldConfig); 
@@ -335,7 +342,7 @@ namespace priv
     )
     {
         if(tcsetattr(m_outputFile, TCSAFLUSH | TCSANOW, &m_currentConfig) != 0)
-            std::cout << "Problème : -> Configuration <-" << std::endl;
+            throw std::runtime_error("Unable set the new configuration");
     }
 
 
@@ -356,7 +363,7 @@ namespace priv
         auto it = m_baudRates.find(baud);
 
         if(it == m_baudRates.end())
-            throw std::runtime_error("");
+            throw std::runtime_error("Unable to retrieve the baud rate");
 
         return (*it).second;        
     }

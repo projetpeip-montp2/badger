@@ -31,7 +31,6 @@
 #define SERIAL_SERIALSTREAMIMPLPOSIX_HPP
 
 #include <string>
-#include <fcntl.h>
 #include <termios.h>
 
 #include <map>
