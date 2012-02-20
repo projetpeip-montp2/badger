@@ -6,6 +6,7 @@ arthuino/ui_*.h
 
 serial/src/*.o
 serial/src/Posix/*.o
+serial/src/Win32/*.o
 
 badger/src/*.o
 badger/badger
