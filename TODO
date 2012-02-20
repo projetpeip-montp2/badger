@@ -1,0 +1,20 @@
+    TODO list
+
+
+Général:
+    - Documenter tout :)
+
+
+Badger:
+    - Résoudre l'exception si autre chose est appellé que open ou close
+    - Mettre les noms de contributeurs
+
+
+Serial:
+    - Implémenter le support du système Win32
+    - Tester, tester et retester...
+
+
+- CMake
+    - Inclure les bons fichiers suivants le système
+    - Comprendre pourquoi ça fonctionne pas avec XCode
