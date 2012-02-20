@@ -36,6 +36,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
+
 
 namespace serial
 {
@@ -146,69 +148,56 @@ namespace priv
     }
 
 
-    std::vector<byte> serialstreamImplPosix::readBytes
+
+
+
+
+
+
+    int serialstreamImplPosix::bytesAvailable
     (
-        byte terminaisonByte
-    )
+    ) const
     {
-        // Problème : Que se passe-t-il si à la première lecture échoue et 
-        // que terminaisonByte == '0' (valeur par défaut) ?????
+        int bytesQueued;
+        if (ioctl(m_outputFile, FIONREAD, &bytesQueued) == -1)
+            return int(-1);
 
-        std::vector<byte> result;
-        byte next_byte(0);
-
-        do
-        {
-            if(::read(m_outputFile, &next_byte, 1) > 0)
-                result.push_back(next_byte);
-        }
-        while(next_byte != terminaisonByte);
-
-        return result;
+        return bytesQueued;
     }
 
 
-    byte serialstreamImplPosix::readByte
+    void serialstreamImplPosix::read
     (
+        byte *buffer, 
+        unsigned int n
     )
     {
-        byte b;
-        while(::read( m_outputFile, &b, 1 ) < 0)
-        {
-            // Rien à faire
-        }
+        auto bytesRead = ::read(m_outputFile, &buffer, n);
 
-        return b;
+        if(bytesRead < 0)
+            throw std::runtime_error("Unable to read on serial port");
     }
 
 
-    void serialstreamImplPosix::writeBytes
+    void serialstreamImplPosix::write
     (
-        const std::vector<byte> &b
+        const byte *buffer, 
+        unsigned int n
     )
     {
-        ssize_t num_of_bytes_written(0);
-        do
-        {
-            num_of_bytes_written = ::write(m_outputFile, &b[0]+num_of_bytes_written,  static_cast<int>(b.size())-num_of_bytes_written);
-        }
-        while( ( num_of_bytes_written < static_cast<int>(b.size()) ) );
+        auto bytesWrote = ::write(m_outputFile, &buffer, n);
+
+        if(bytesWrote < 0)
+            throw std::runtime_error("Unable to write on serial port");
     }
 
 
-    void serialstreamImplPosix::writeByte
+    void serialstreamImplPosix::flush
     (
-        byte b
     )
     {
-        while(::write(m_outputFile, &b, 1) < 0)
-        {
-            // Rien à faire
-        }
+        tcflush(m_outputFile, TCIOFLUSH);
     }
-
-
-
 
 
 

@@ -68,11 +68,13 @@ namespace priv
 
         virtual void setTimeout(int timeout);
 
-        virtual std::vector<byte> readBytes(byte terminaisonByte);
-        virtual byte readByte();
+        virtual int bytesAvailable() const;
 
-        virtual void writeBytes(const std::vector<byte> &b);
-        virtual void writeByte(byte b);
+        virtual void read(byte *buffer, unsigned int n);
+
+        virtual void write(const byte *buffer, unsigned int n);
+
+        virtual void flush();
 
     private:
         speed_t retrieveBaudRate(BaudRate baud) const;

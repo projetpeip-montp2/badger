@@ -62,11 +62,13 @@ namespace priv
 
         virtual void setTimeout(int timeout) = 0;
 
-        virtual std::vector<byte> readBytes(byte terminaisonByte) = 0;
-        virtual byte readByte() = 0;
+        virtual int bytesAvailable() const = 0;
 
-        virtual void writeBytes(const std::vector<byte> &b) = 0;
-        virtual void writeByte(byte b) = 0;
+        virtual void read(byte *buffer, unsigned int n) = 0;
+
+        virtual void write(const byte *buffer, unsigned int n) = 0;
+
+        virtual void flush() = 0;
     };
 
 

@@ -107,11 +107,15 @@ namespace serial
             void setTimeout(int timeout);
             int getTimeout() const;
 
-            std::vector<byte> readBytes(byte terminaisonByte);
-            byte readByte();
+            int bytesAvailable() const;
 
-            void writeBytes(const std::vector<byte> &b);
-            void writeByte(byte b);
+            serialstream& read(byte *buffer, unsigned int n);
+
+            serialstream& write(const byte *buffer, unsigned int n);
+
+            serialstream& readUntil(std::vector<byte> &buffer, byte terminaison);
+
+            serialstream& flush();
 
         private:
             BaudRate    m_baudRate;

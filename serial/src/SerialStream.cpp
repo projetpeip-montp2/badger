@@ -109,49 +109,6 @@ namespace serial
     }
 
 
-    std::vector<byte> serialstream::readBytes
-    (
-        byte terminaisonByte
-    )
-    {
-        checkAvailablity();
-
-        return m_serialImpl->readBytes(terminaisonByte);
-    }
-
-
-    byte serialstream::readByte
-    (
-    )
-    {
-        checkAvailablity();
-
-        return m_serialImpl->readByte();
-    }
-
-
-    void serialstream::writeBytes
-    (
-        const std::vector<byte> &b
-    )
-    {
-        checkAvailablity();
-
-        m_serialImpl->writeBytes(b);
-    }
-
-
-    void serialstream::writeByte
-    (
-        byte b
-    )
-    {
-        checkAvailablity();
-
-        m_serialImpl->writeByte(b);
-    }
-
-
     void serialstream::setBaudRate
     (
         BaudRate rate
@@ -260,6 +217,80 @@ namespace serial
     ) const
     {
         return m_timeout;
+    }
+
+
+    int serialstream::bytesAvailable
+    (
+    ) const
+    {
+        checkAvailablity();
+    
+        return m_serialImpl->bytesAvailable();
+    }
+
+
+    serialstream& serialstream::read
+    (
+        byte *buffer, 
+        unsigned int n
+    )
+    {
+        checkAvailablity();
+    
+        m_serialImpl->read(buffer, n);
+
+        return *this;
+    }
+
+
+    serialstream& serialstream::write
+    (
+        const byte *buffer, 
+        unsigned int n
+    )
+    {
+        checkAvailablity();
+    
+        m_serialImpl->write(buffer, n);
+
+        return *this;
+    }
+
+
+    serialstream& serialstream::readUntil
+    (
+        std::vector<byte> &buffer, 
+        byte terminaison
+    )
+    {
+        checkAvailablity();
+    
+        buffer.clear();
+
+        byte next(0);
+        do
+        {
+            while(bytesAvailable() < 1) {}
+
+            m_serialImpl->read(&next, 1);
+            buffer.push_back(next);
+        }
+        while(next != terminaison);
+
+        return *this;
+    }
+
+
+    serialstream& serialstream::flush
+    (
+    )
+    {
+        checkAvailablity();
+    
+        m_serialImpl->flush();
+
+        return *this;
     }
 
 

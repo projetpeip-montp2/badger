@@ -332,7 +332,8 @@ namespace badger
     (
     )
     {
-        std::vector<serial::byte> result = m_serial.readBytes('\r');
+        std::vector<serial::byte> result;
+        m_serial.readUntil(result, '\r');
 
         if(result.front() != serial::byte(2) || result.back() != serial::byte(13))
             throw std::runtime_error("The return command don't begin by STX or don't end by CR");
@@ -350,7 +351,7 @@ namespace badger
         const std::vector<serial::byte> &command
     )
     {
-        auto tmp = command;
+        std::vector<serial::byte> tmp = command;
 
         // Add STX to begin
         tmp.insert(tmp.begin(), 2);
@@ -358,7 +359,7 @@ namespace badger
         // Add CR to end
         tmp.push_back(13);
 
-        m_serial.writeBytes(tmp);
+        m_serial.write(&tmp[0], tmp.size());
     }
 
 
