@@ -29,8 +29,6 @@
 
 #include "SerialStreamImplPosix.hpp"
 
-#include <algorithm>
-#include <iostream>
 #include <stdexcept>
 
 #include <fcntl.h>

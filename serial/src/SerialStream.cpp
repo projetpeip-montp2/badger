@@ -36,6 +36,11 @@
 #if defined(SERIAL_SYSTEM_LINUX) || defined(SERIAL_SYSTEM_FREEBSD) || defined(SERIAL_SYSTEM_MACOS)
     #include "Posix/SerialStreamImplPosix.hpp"
     typedef serial::priv::serialstreamImplPosix SerialStreamImplType;
+
+#elif defined(SERIAL_SYSTEM_WINDOWS)
+    #include "Win32/SerialStreamImplWin32.hpp"
+    typedef serial::priv::serialstreamImplWin32 SerialStreamImplType;
+
 #else
     #error "Unsupported Platform"
 #endif

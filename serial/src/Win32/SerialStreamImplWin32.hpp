@@ -27,30 +27,60 @@
 // POSSIBILITY OF SUCH DAMAGE.
 ////////////////////////////////////////////////////////////
 
-#ifndef SERIAL_PLATFORM_HPP
-#define SERIAL_PLATFORM_HPP
+#ifndef SERIAL_SERIALSTREAMIMPLWIN32_HPP
+#define SERIAL_SERIALSTREAMIMPLWIN32_HPP
 
-#if defined(_WIN32) || defined(__WIN32__)
-    // Windows
-    #define SERIAL_SYSTEM_WINDOWS
+#include <string>
 
-#elif defined(linux) || defined(__linux)
-    // Linux
-    #define SERIAL_SYSTEM_LINUX
+#include "../SerialStreamImpl.hpp"
 
-#elif defined(__APPLE__) || defined(MACOSX) || defined(macintosh) || defined(Macintosh)
-    // MacOS
-    #define SERIAL_SYSTEM_MACOS
+namespace serial
+{
 
-#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-    // FreeBSD
-    #define SERIAL_SYSTEM_FREEBSD
+namespace priv
+{
 
-#else
-    // Unsupported system
-    #error This operating system is not supported by serial library
-#endif
+    class serialstreamImplWin32 : public serialstreamImpl
+    {
+    public:
+        serialstreamImplWin32();
+        serialstreamImplWin32(std::string port);
+
+        virtual ~serialstreamImplWin32();
+
+        virtual void open(std::string port);
+        virtual void close();
+
+        virtual bool isOpen();
+
+        virtual void setBaudRate(BaudRate rate);
+
+        virtual void setDataBits(DataBits data);
+
+        virtual void setStopBits(StopBits stop);
+
+        virtual void setParity(Parity parity);
+
+        virtual void setFlowControl(FlowControl flow);
+
+        virtual void setTimeout(int timeout);
+
+        virtual int bytesAvailable() const;
+
+        virtual void read(byte *buffer, unsigned int n);
+
+        virtual void write(const byte *buffer, unsigned int n);
+
+        virtual void flush();
+
+    private:
+
+    };
 
 
-#endif // SERIAL_PLATFORM_HPP
+} // namespace priv
+
+} // namespace serial
+
+#endif // SERIAL_SERIALSTREAMIMPLWIN32_HPP
 
