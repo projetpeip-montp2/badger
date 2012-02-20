@@ -42,14 +42,9 @@ namespace serial
 
 namespace priv
 {
-	std::map<BaudRate, speed_t> serialstreamImplPosix::m_baudRates = 
-    {
-        std::make_pair(BaudRate::BAUD_9600,   B9600),
-        std::make_pair(BaudRate::BAUD_19200,  B19200)
-    };
+	std::map<BaudRate, speed_t> serialstreamImplPosix::m_baudRates;
 
-
-
+    bool serialstreamImplPosix::m_staticBaudRatesInitialized = false;
 
 
 
@@ -330,6 +325,14 @@ namespace priv
         BaudRate baud
     ) const
     {
+        if(!m_staticBaudRatesInitialized)
+        {
+            m_baudRates.insert(std::make_pair(BaudRate::BAUD_9600,   B9600));
+            m_baudRates.insert(std::make_pair(BaudRate::BAUD_19200,  B19200));
+
+            m_staticBaudRatesInitialized = true;
+        }
+
         auto it = m_baudRates.find(baud);
 
         if(it == m_baudRates.end())

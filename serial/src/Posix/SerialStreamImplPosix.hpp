@@ -82,6 +82,7 @@ namespace priv
         void updateConfig();
 
         static std::map<BaudRate, speed_t> m_baudRates;
+        static bool m_staticBaudRatesInitialized;
 
         int m_outputFile;
 
