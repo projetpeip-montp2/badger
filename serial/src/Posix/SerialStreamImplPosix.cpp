@@ -44,25 +44,8 @@ namespace priv
 {
 	std::map<BaudRate, speed_t> serialstreamImplPosix::m_baudRates = 
     {
-        std::make_pair(BaudRate::BAUD_50,     B50),
-        std::make_pair(BaudRate::BAUD_75,     B75),
-        std::make_pair(BaudRate::BAUD_110,    B110),
-        std::make_pair(BaudRate::BAUD_134,    B134),
-        std::make_pair(BaudRate::BAUD_150,    B150),
-        std::make_pair(BaudRate::BAUD_200,    B200),
-        std::make_pair(BaudRate::BAUD_300,    B300),
-        std::make_pair(BaudRate::BAUD_600,    B600),
-        std::make_pair(BaudRate::BAUD_1200,   B1200),
-        std::make_pair(BaudRate::BAUD_1800,   B1800),
-        std::make_pair(BaudRate::BAUD_2400,   B2400),
-        std::make_pair(BaudRate::BAUD_4800,   B4800),
         std::make_pair(BaudRate::BAUD_9600,   B9600),
-        std::make_pair(BaudRate::BAUD_19200,  B19200),
-        std::make_pair(BaudRate::BAUD_38400,  B38400),
-        std::make_pair(BaudRate::BAUD_57600,  B57600),
-        std::make_pair(BaudRate::BAUD_115200, B115200),
-        std::make_pair(BaudRate::BAUD_230400, B230400),
-        std::make_pair(BaudRate::BAUD_460800, B460800)
+        std::make_pair(BaudRate::BAUD_19200,  B19200)
     };
 
 
