@@ -109,9 +109,11 @@ namespace serial
 
             int bytesAvailable() const;
 
+            serialstream& write(const byte *buffer, unsigned int n);
+
             serialstream& read(byte *buffer, unsigned int n);
 
-            serialstream& write(const byte *buffer, unsigned int n);
+            serialstream& readAll(std::vector<byte> &buffer);
 
             serialstream& readUntil(std::vector<byte> &buffer, byte terminaison);
 

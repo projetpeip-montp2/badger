@@ -235,20 +235,6 @@ namespace serial
     }
 
 
-    serialstream& serialstream::read
-    (
-        byte *buffer, 
-        unsigned int n
-    )
-    {
-        checkAvailablity();
-    
-        m_serialImpl->read(buffer, n);
-
-        return *this;
-    }
-
-
     serialstream& serialstream::write
     (
         const byte *buffer, 
@@ -258,6 +244,20 @@ namespace serial
         checkAvailablity();
     
         m_serialImpl->write(buffer, n);
+
+        return *this;
+    }
+
+
+    serialstream& serialstream::read
+    (
+        byte *buffer, 
+        unsigned int n
+    )
+    {
+        checkAvailablity();
+    
+        m_serialImpl->read(buffer, n);
 
         return *this;
     }
@@ -282,6 +282,28 @@ namespace serial
             buffer.push_back(next);
         }
         while(next != terminaison);
+
+        return *this;
+    }
+
+
+    serialstream& serialstream::readAll
+    (
+        std::vector<byte> &buffer
+    )
+    {
+        checkAvailablity();
+    
+        buffer.clear();
+
+        int available = bytesAvailable();
+
+        if(available > 0)
+        {
+            buffer.resize(available);
+
+            read(&buffer[0], available);
+        }
 
         return *this;
     }

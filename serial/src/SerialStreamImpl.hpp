@@ -64,9 +64,9 @@ namespace priv
 
         virtual int bytesAvailable() const = 0;
 
-        virtual void read(byte *buffer, unsigned int n) = 0;
-
         virtual void write(const byte *buffer, unsigned int n) = 0;
+
+        virtual void read(byte *buffer, unsigned int n) = 0;
 
         virtual void flush() = 0;
     };
