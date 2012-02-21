@@ -6,7 +6,8 @@ Général:
 
 
 Badger:
-    - Résoudre l'exception si autre chose est appelé que open ou close
+	- Faire en sorte que le programme fonctionne sous OSX
+    - Résoudre l'exception si autre chose est appelé que open ou close alors que le port n'est pas ouvert
     - Mettre les noms de contributeurs
 
 
