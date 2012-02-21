@@ -67,7 +67,7 @@ namespace badger
         std::function<void(const std::string&)> openFunction = std::bind(&Badger::open, this, std::placeholders::_1);
         addCommand("open", openFunction, false);
 
-        std::function<void()> closeFunction = std::bind(&Badger::logout, this);
+        std::function<void()> closeFunction = std::bind(&Badger::close, this);
         addCommand("close", closeFunction, false);
 
         std::function<std::string(const std::string&)> loginFunction = std::bind(&Badger::login, this, std::placeholders::_1);
