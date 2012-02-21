@@ -7,6 +7,7 @@ Général:
 
 Badger:
     - Résoudre l'exception si autre chose est appellé que open ou close
+    - Résoudre le bug suivant : il est possible d'appeller des fonctions sur le port série même après un close()
     - Mettre les noms de contributeurs
 
 

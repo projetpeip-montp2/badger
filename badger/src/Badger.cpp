@@ -108,10 +108,7 @@ namespace badger
     (
     )
     {
-        if(m_logged)
-            sendCommand(m_console, "logout");
-
-        m_serial.close();
+        close();
     }
 
 
@@ -128,6 +125,9 @@ namespace badger
     (
     )
     {
+        if(m_logged)
+            sendCommand(m_console, "logout");
+
         m_serial.close();
     }
 
