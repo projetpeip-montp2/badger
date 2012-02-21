@@ -165,7 +165,7 @@ namespace priv
         unsigned int n
     )
     {
-        auto bytesRead = ::read(m_outputFile, &buffer, n);
+        auto bytesRead = ::read(m_outputFile, buffer, n);
 
         if(bytesRead < 0)
             throw std::runtime_error("Unable to read on serial port");
@@ -178,7 +178,7 @@ namespace priv
         unsigned int n
     )
     {
-        auto bytesWrote = ::write(m_outputFile, &buffer, n);
+        auto bytesWrote = ::write(m_outputFile, buffer, n);
 
         if(bytesWrote < 0)
             throw std::runtime_error("Unable to write on serial port");
