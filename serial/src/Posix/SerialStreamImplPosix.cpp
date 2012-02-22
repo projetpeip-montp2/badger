@@ -99,6 +99,9 @@ namespace priv
 
         // On désactive un possible mappage (CR -> NL) ou (NL -> CR)
         m_currentConfig.c_iflag = 0;
+        
+        // Compatibilité Mac OS X
+        m_currentConfig.c_cflag|=CREAD|CLOCAL;       
 
         updateConfig();
 
