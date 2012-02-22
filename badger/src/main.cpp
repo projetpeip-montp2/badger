@@ -3,6 +3,9 @@
 
 #include "Badger.hpp"
 
+// Include cstdlib for EXIT_SUCCESS with MinGW
+#include <cstdlib>
+
 int main()
 {
     try

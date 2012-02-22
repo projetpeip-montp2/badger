@@ -125,10 +125,12 @@ namespace badger
     (
     )
     {
-        if(m_logged)
-            sendCommand(m_console, "logout");
+        if(m_serial.isOpen())
+        {
+            logout();
 
-        m_serial.close();
+            m_serial.close();
+        }
     }
 
 
