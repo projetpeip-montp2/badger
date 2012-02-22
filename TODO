@@ -6,8 +6,7 @@ Général:
 
 
 Badger:
-	- Faire en sorte que le programme fonctionne sous OSX
-    - Résoudre l'exception si autre chose est appelé que open ou close alors que le port n'est pas ouvert
+	- Faire en sorte que le programme fonctionne sous OSX et Win32
     - Mettre les noms de contributeurs
 
 
@@ -17,5 +16,4 @@ Serial:
 
 
 - CMake
-    - Inclure les bons fichiers suivants le système
     - Comprendre pourquoi ça fonctionne pas avec XCode
