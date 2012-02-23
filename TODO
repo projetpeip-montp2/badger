@@ -5,6 +5,10 @@ Général:
     - Documenter tout :)
 
 
+Date:
+    - Vérifier que les dates soient bien valides
+
+
 Badger:
 	- Faire en sorte que le programme fonctionne sous OSX et Win32
     - Mettre les noms de contributeurs

@@ -74,7 +74,7 @@ namespace badger
         addCommand("login", loginFunction, false);
 
         std::function<std::string()> logoutFunction = std::bind(&Badger::logout, this);
-        addCommand("logout", logoutFunction, false);
+        addCommand("logout", logoutFunction, true);
 
         std::function<std::string()> nextFunction = std::bind(&Badger::next, this);
         addCommand("next", nextFunction, true);
@@ -295,6 +295,14 @@ namespace badger
         // Don't change order of this if :)
         if(it != m_access.end() && m_access[nameFunction] && !m_logged)
         {
+            // This work only because functions that need to be logged use
+            // serial port
+            if(!m_serial.isOpen())
+            {
+                std::cout << "Serial port isn't open" << std::endl;
+                return;
+            }
+
             std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
 
             while(continueToLogin)
