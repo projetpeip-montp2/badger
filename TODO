@@ -10,12 +10,10 @@ Date:
 
 
 Badger:
-	- Faire en sorte que le programme fonctionne sous OSX et Win32
     - Mettre les noms de contributeurs
 
 
 Serial:
-    - Implémenter le support du système Win32
     - Tester, tester et retester...
 
 

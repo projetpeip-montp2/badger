@@ -13,7 +13,7 @@ d'exporter les données pour être qu'elles soient lues depuis le site web.
 Compilation
 -----------
 
-Le programme nécéssite un support partiel du c++11:
+Le programme nécéssite un support partiel du c++11:  
 * Variadic template
 * functionnal, thread, chrono, memory
 
