@@ -80,11 +80,11 @@ namespace serial
     {
         public:
             serialstream();
-            serialstream(std::string port);
+            serialstream(const std::string &port);
 
             ~serialstream();
 
-            void open(std::string port);
+            void open(const std::string &port);
             void close();
 
             bool isOpen();

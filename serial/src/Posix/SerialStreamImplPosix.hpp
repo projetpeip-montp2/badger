@@ -47,11 +47,11 @@ namespace priv
     {
     public:
         serialstreamImplPosix();
-        serialstreamImplPosix(std::string port);
+        serialstreamImplPosix(const std::string &port);
 
         virtual ~serialstreamImplPosix();
 
-        virtual void open(std::string port);
+        virtual void open(const std::string &port);
         virtual void close();
 
         virtual bool isOpen();

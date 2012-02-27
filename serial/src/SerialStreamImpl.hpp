@@ -45,7 +45,7 @@ namespace priv
     public:
         virtual ~serialstreamImpl();
 
-        virtual void open(std::string port) = 0;
+        virtual void open(const std::string &port) = 0;
         virtual void close() = 0;
 
         virtual bool isOpen() = 0;

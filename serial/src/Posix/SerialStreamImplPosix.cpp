@@ -63,7 +63,7 @@ namespace priv
 
     serialstreamImplPosix::serialstreamImplPosix
     (
-        std::string port
+        const std::string &port
     ) :
     m_outputFile(-1)
     {
@@ -81,7 +81,7 @@ namespace priv
 
     void serialstreamImplPosix::open
     (
-        std::string port
+        const std::string &port
     )
     {
         m_outputFile = ::open( port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);

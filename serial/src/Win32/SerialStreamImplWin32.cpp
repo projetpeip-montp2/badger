@@ -51,7 +51,8 @@ namespace priv
 
     serialstreamImplWin32::serialstreamImplWin32
     (
-    ) : m_handle(INVALID_HANDLE_VALUE)
+    ) :
+    m_handle(INVALID_HANDLE_VALUE)
     {
 
     }
@@ -76,7 +77,7 @@ namespace priv
 
     void serialstreamImplWin32::open
     (
-        std::string port
+        const std::string &port
     )
     {
 		m_handle = CreateFile(port.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);

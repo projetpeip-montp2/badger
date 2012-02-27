@@ -51,7 +51,7 @@ namespace priv
 
         virtual ~serialstreamImplWin32();
 
-        virtual void open(std::string port);
+        virtual void open(const std::string &port);
         virtual void close();
 
         virtual bool isOpen();

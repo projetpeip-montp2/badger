@@ -58,7 +58,7 @@ namespace serial
 
     serialstream::serialstream
     (
-        std::string port
+        const std::string &port
     )
     {
         commonsInitializations();
@@ -76,7 +76,7 @@ namespace serial
 
     void serialstream::open
     (
-        std::string port
+        const std::string &port
     )
     {
         close();
