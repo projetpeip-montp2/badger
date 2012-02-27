@@ -112,7 +112,7 @@ namespace priv
 
     bool serialstreamImplWin32::isOpen
     (
-    )
+    ) const
     {
         return m_handle != INVALID_HANDLE_VALUE;
     }

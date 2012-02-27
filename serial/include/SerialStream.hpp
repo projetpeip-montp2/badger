@@ -88,7 +88,7 @@ namespace serial
             void open(const std::string &port);
             void close();
 
-            bool isOpen();
+            bool isOpen() const;
 
             void setBaudRate(BaudRate rate);
             BaudRate getBaudRate() const;
@@ -128,8 +128,6 @@ namespace serial
             FlowControl m_flow;
 
             std::chrono::milliseconds m_timeout;
-
-            void checkAvailablity() const;
 
             void commonsInitializations();
 

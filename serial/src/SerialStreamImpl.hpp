@@ -50,7 +50,7 @@ namespace priv
 
         virtual void close() = 0;
 
-        virtual bool isOpen() = 0;
+        virtual bool isOpen() const = 0;
 
         virtual void setBaudRate(BaudRate rate) = 0;
 

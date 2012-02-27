@@ -54,7 +54,7 @@ namespace priv
         virtual void open(const std::string &port);
         virtual void close();
 
-        virtual bool isOpen();
+        virtual bool isOpen() const;
 
         virtual void setBaudRate(BaudRate rate);
 

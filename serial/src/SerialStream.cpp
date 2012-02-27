@@ -108,7 +108,7 @@ namespace serial
 
     bool serialstream::isOpen
     (
-    )
+    ) const
     {
         return m_serialImpl ? m_serialImpl->isOpen() : false;
     }
@@ -119,9 +119,12 @@ namespace serial
         BaudRate rate
     )
     {
-        checkAvailablity();
+        if(isOpen())
+        {
+            m_baudRate = rate;
 
-        m_serialImpl->setBaudRate(rate);
+            m_serialImpl->setBaudRate(rate);
+        }
     }
 
 
@@ -137,9 +140,12 @@ namespace serial
         DataBits data
     )
     {
-        checkAvailablity();
+        if(isOpen())
+        {
+            m_dataBits = data;
 
-        m_serialImpl->setDataBits(data);
+            m_serialImpl->setDataBits(data);
+        }
     }
 
 
@@ -155,9 +161,12 @@ namespace serial
         StopBits stop
     )
     {
-        checkAvailablity();
+        if(isOpen())
+        {
+            m_stopBits = stop;
 
-        m_serialImpl->setStopBits(stop);
+            m_serialImpl->setStopBits(stop);
+        }
     }
 
     StopBits serialstream::getStopBits
@@ -173,9 +182,12 @@ namespace serial
         Parity parity
     )
     {
-        checkAvailablity();
+        if(isOpen())
+        {
+            m_parity = parity;
 
-        m_serialImpl->setParity(parity);
+            m_serialImpl->setParity(parity);
+        }
     }
 
 
@@ -192,9 +204,12 @@ namespace serial
         FlowControl flow
     )
     {
-        checkAvailablity();
+        if(isOpen())
+        {
+            m_flow = flow;
 
-        m_serialImpl->setFlowControl(flow);
+            m_serialImpl->setFlowControl(flow);
+        }
     }
 
 
@@ -211,9 +226,12 @@ namespace serial
         const std::chrono::milliseconds &timeout
     )
     {
-        checkAvailablity();
+        if(isOpen())
+        {
+            m_timeout = timeout;
 
-        m_serialImpl->setTimeout(timeout);
+            m_serialImpl->setTimeout(timeout);
+        }
     }
 
 
@@ -229,9 +247,7 @@ namespace serial
     (
     ) const
     {
-        checkAvailablity();
-
-        return m_serialImpl->bytesAvailable();
+        return isOpen() ? m_serialImpl->bytesAvailable() : -1;
     }
 
 
@@ -241,9 +257,8 @@ namespace serial
         unsigned int n
     )
     {
-        checkAvailablity();
-
-        m_serialImpl->write(buffer, n);
+        if(isOpen())
+            m_serialImpl->write(buffer, n);
 
         return *this;
     }
@@ -255,9 +270,8 @@ namespace serial
         unsigned int n
     )
     {
-        checkAvailablity();
-
-        m_serialImpl->read(buffer, n);
+        if(isOpen())
+            m_serialImpl->read(buffer, n);
 
         return *this;
     }
@@ -269,19 +283,20 @@ namespace serial
         byte terminaison
     )
     {
-        checkAvailablity();
-
-        buffer.clear();
-
-        byte next(0);
-        do
+        if(isOpen())
         {
-            while(bytesAvailable() < 1) {}
+            buffer.clear();
 
-            m_serialImpl->read(&next, 1);
-            buffer.push_back(next);
+            byte next(0);
+            do
+            {
+                while(bytesAvailable() < 1) {}
+
+                m_serialImpl->read(&next, 1);
+                buffer.push_back(next);
+            }
+            while(next != terminaison);
         }
-        while(next != terminaison);
 
         return *this;
     }
@@ -292,17 +307,18 @@ namespace serial
         std::vector<byte> &buffer
     )
     {
-        checkAvailablity();
-
-        buffer.clear();
-
-        int available = bytesAvailable();
-
-        if(available > 0)
+        if(isOpen())
         {
-            buffer.resize(available);
+            buffer.clear();
 
-            read(&buffer[0], available);
+            int available = bytesAvailable();
+
+            if(available > 0)
+            {
+                buffer.resize(available);
+
+                read(&buffer[0], available);
+            }
         }
 
         return *this;
@@ -313,20 +329,10 @@ namespace serial
     (
     )
     {
-        checkAvailablity();
-
-        m_serialImpl->flush();
+        if(isOpen())
+            m_serialImpl->flush();
 
         return *this;
-    }
-
-
-    void serialstream::checkAvailablity
-    (
-    ) const
-    {
-        if(!m_serialImpl || !m_serialImpl->isOpen())
-            throw std::runtime_error("Serial port isn't open");
     }
 
 

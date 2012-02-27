@@ -59,40 +59,40 @@ namespace badger
     m_continuer(true),
     m_logged(false)
     {
-        // Important : A console need a view, otherwise seg fault :)
+        // Important, a console need a view, otherwise seg fault :)
         m_console.setView( std::make_shared<ConsoleViewBadger>() );
 
         m_console.enable(true);
 
         std::function<void(const std::string&)> openFunction = std::bind(&Badger::open, this, std::placeholders::_1);
-        addCommand("open", openFunction, false);
+        addCommand("open", openFunction, false, false);
 
         std::function<void()> closeFunction = std::bind(&Badger::close, this);
-        addCommand("close", closeFunction, false);
+        addCommand("close", closeFunction, false, true);
 
         std::function<std::string(const std::string&)> loginFunction = std::bind(&Badger::login, this, std::placeholders::_1);
-        addCommand("login", loginFunction, false);
+        addCommand("login", loginFunction, false, true);
 
         std::function<std::string()> logoutFunction = std::bind(&Badger::logout, this);
-        addCommand("logout", logoutFunction, true);
+        addCommand("logout", logoutFunction, true, true);
 
         std::function<std::string()> nextFunction = std::bind(&Badger::next, this);
-        addCommand("next", nextFunction, true);
+        addCommand("next", nextFunction, true, true);
 
         std::function<std::string()> rollbackFunction = std::bind(&Badger::rollback, this);
-        addCommand("rollback", rollbackFunction, true);
+        addCommand("rollback", rollbackFunction, true, true);
 
         std::function<std::string()> eraseFunction = std::bind(&Badger::erase, this);
-        addCommand("erase", eraseFunction, true);
+        addCommand("erase", eraseFunction, true, true);
 
         std::function<std::string()> countFunction = std::bind(&Badger::count, this);
-        addCommand("count", countFunction, false);
+        addCommand("count", countFunction, false, true);
 
         std::function<std::string(const Date&, const Time&, const Time&)> getFunction = std::bind(&Badger::get, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-        addCommand("get", getFunction, true);
+        addCommand("get", getFunction, true, true);
 
         std::function<void()> quitFunction = std::bind(&Badger::quit, this);
-        addCommand("quit", quitFunction, false);
+        addCommand("quit", quitFunction, false, false);
 
 
         std::cout << "==================================" << std::endl;
@@ -278,7 +278,7 @@ namespace badger
     }
 
 
-    void Badger::needLogin
+    void Badger::tryToSendCommand
     (
         const std::string &command
     )
@@ -292,45 +292,50 @@ namespace badger
 
         auto it = m_access.find(nameFunction);
 
-        // Don't change order of this if :)
-        if(it != m_access.end() && m_access[nameFunction] && !m_logged)
+        if(it != m_access.end())
         {
-            // This work only because functions that need to be logged use
-            // serial port
-            if(!m_serial.isOpen())
+            bool canBeSend = true;
+
+            if(m_access[nameFunction].second && !m_serial.isOpen())
             {
                 std::cout << "Serial port isn't open" << std::endl;
                 return;
             }
 
-            std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
-
-            while(continueToLogin)
+            if(m_access[nameFunction].first && !m_logged)
             {
-                std::string password;
+                std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
 
-                std::cout << "Password : ";
-                std::getline(std::cin, password);
-
-                login(password);
-
-                if(m_logged)
+                while(continueToLogin)
                 {
-                    sendCommand(m_console, command);
-                    continueToLogin = false;
-                }
+                    std::string password;
 
-                else
-                {
-                    std::string answer;
+                    std::cout << "Password : ";
+                    std::getline(std::cin, password);
 
-                    std::cout << "Bad password! Retry (yes)?: ";
-                    std::getline(std::cin, answer);
+                    login(password);
 
-                    if(answer != "yes")
+                    if(m_logged)
                         continueToLogin = false;
+
+                    else
+                    {
+                        std::string answer;
+
+                        std::cout << "Bad password! Retry (yes)?: ";
+                        std::getline(std::cin, answer);
+
+                        if(answer != "yes")
+                            continueToLogin = false;
+                    }
                 }
+
+
+                canBeSend = m_logged ? true : false;
             }
+
+            if(canBeSend)
+                sendCommand(m_console, command);
         }
 
         else
@@ -408,9 +413,67 @@ namespace badger
             std::cout << "> ";
             std::getline(std::cin, command);
 
-            needLogin(command);
+            tryToSendCommand(command);
         }
     }
 
 } // namespace badger
+
+
+
+
+/*
+            if(m_access[nameFunction].second && !m_serial.isOpen())
+            {
+                std::cout << "Serial port isn't open" << std::endl;
+                return;
+            }
+
+            else
+            {
+                alreadySent = true;
+
+                sendCommand(m_console, command);
+            }
+
+
+            
+            if(m_access[nameFunction].first && !m_logged)
+            {
+                std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
+
+                while(continueToLogin)
+                {
+                    std::string password;
+
+                    std::cout << "Password : ";
+                    std::getline(std::cin, password);
+
+                    login(password);
+
+                    if(m_logged)
+                    {
+                        sendCommand(m_console, command);
+                        continueToLogin = false;
+                    }
+
+                    else
+                    {
+                        std::string answer;
+
+                        std::cout << "Bad password! Retry (yes)?: ";
+                        std::getline(std::cin, answer);
+
+                        if(answer != "yes")
+                            continueToLogin = false;
+                    }
+                }
+            }
+
+            else
+            {
+                if(!alreadySent)
+                    sendCommand(m_console, command);
+            }
+*/
 

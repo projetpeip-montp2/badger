@@ -138,7 +138,7 @@ namespace priv
 
     bool serialstreamImplPosix::isOpen
     (
-    )
+    ) const
     {
         return (m_outputFile != -1);
     }
