@@ -330,8 +330,8 @@ namespace priv
     {
         if(!m_staticBaudRatesInitialized)
         {
-            m_baudRates.insert(std::make_pair(BaudRate::BAUD_9600,   B9600));
-            m_baudRates.insert(std::make_pair(BaudRate::BAUD_19200,  B19200));
+            m_baudRates.insert(std::make_pair(BaudRate::Baud_9600,   B9600));
+            m_baudRates.insert(std::make_pair(BaudRate::Baud_19200,  B19200));
 
             m_staticBaudRatesInitialized = true;
         }
