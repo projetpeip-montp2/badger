@@ -66,7 +66,7 @@ namespace priv
 
         virtual void setFlowControl(FlowControl flow);
 
-        virtual void setTimeout(int timeout);
+        virtual void setTimeout(const std::chrono::milliseconds &timeout);
 
         virtual int bytesAvailable() const;
 

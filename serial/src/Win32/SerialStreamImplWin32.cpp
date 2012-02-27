@@ -256,14 +256,14 @@ namespace priv
 
     void serialstreamImplWin32::setTimeout
     (
-        int timeout
+        const std::chrono::milliseconds &timeout
     )
     {
-        m_commTimeouts.ReadIntervalTimeout = timeout;
-        m_commTimeouts.ReadTotalTimeoutConstant = timeout;
+        m_commTimeouts.ReadIntervalTimeout = timeout.count();
+        m_commTimeouts.ReadTotalTimeoutConstant = timeout.count();
 
 		m_commTimeouts.ReadTotalTimeoutMultiplier = 0;
-		m_commTimeouts.WriteTotalTimeoutMultiplier = timeout;
+		m_commTimeouts.WriteTotalTimeoutMultiplier = timeout.count();
 		m_commTimeouts.WriteTotalTimeoutConstant = 0;
 
 		SetCommTimeouts(m_handle, &m_commTimeouts);

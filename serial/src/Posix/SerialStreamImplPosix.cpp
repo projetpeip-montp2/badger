@@ -283,23 +283,11 @@ namespace priv
 
     void serialstreamImplPosix::setTimeout
     (
-        int timeout
+        const std::chrono::milliseconds &timeout
     )
     {
-/*
-        struct timeval Posix_Copy_Timeout;
-        Posix_Copy_Timeout.tv_sec = timeout / 1000;
-
-        Posix_Copy_Timeout.tv_usec = timeout % 1000;
-            fcntl(m_outputFile, F_SETFL, O_SYNC);
-        tcgetattr(m_outputFile, &m_currentConfig);
-
-
-        m_currentConfig.c_cc[VTIME] = timeout/100;
-*/
-
         fcntl(m_outputFile, F_SETFL, O_SYNC);
-        m_currentConfig.c_cc[VTIME] = timeout/100;
+        m_currentConfig.c_cc[VTIME] = timeout.count()/100;
 
         updateConfig();
     }

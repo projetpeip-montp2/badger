@@ -208,7 +208,7 @@ namespace serial
 
     void serialstream::setTimeout
     (
-        int timeout
+        const std::chrono::milliseconds &timeout
     )
     {
         checkAvailablity();
@@ -217,7 +217,7 @@ namespace serial
     }
 
 
-    int serialstream::getTimeout
+    std::chrono::milliseconds serialstream::getTimeout
     (
     ) const
     {
@@ -339,7 +339,7 @@ namespace serial
         m_stopBits = StopBits::OneBit;
         m_parity = Parity::None;
         m_flow = FlowControl::Off;
-        m_timeout = 500;
+        m_timeout = std::chrono::milliseconds(500);
     }
 
 } // namespace serial

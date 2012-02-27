@@ -33,6 +33,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <chrono>
 
 namespace serial
 {
@@ -104,8 +105,8 @@ namespace serial
             void setFlowControl(FlowControl flow);
             FlowControl getFlowControl() const;
 
-            void setTimeout(int timeout);
-            int getTimeout() const;
+            void setTimeout(const std::chrono::milliseconds &timeout);
+            std::chrono::milliseconds getTimeout() const;
 
             int bytesAvailable() const;
 
@@ -126,7 +127,7 @@ namespace serial
             Parity      m_parity;
             FlowControl m_flow;
 
-            int m_timeout;
+            std::chrono::milliseconds m_timeout;
 
             void checkAvailablity() const;
 

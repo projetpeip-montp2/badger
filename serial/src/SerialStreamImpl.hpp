@@ -30,6 +30,7 @@
 #ifndef SERIAL_SERIALSTREAMIMPL_HPP
 #define SERIAL_SERIALSTREAMIMPL_HPP
 
+#include <chrono>
 #include <string>
 
 #include "SerialStream.hpp"
@@ -46,6 +47,7 @@ namespace priv
         virtual ~serialstreamImpl();
 
         virtual void open(const std::string &port) = 0;
+
         virtual void close() = 0;
 
         virtual bool isOpen() = 0;
@@ -60,7 +62,7 @@ namespace priv
 
         virtual void setFlowControl(FlowControl flow) = 0;
 
-        virtual void setTimeout(int timeout) = 0;
+        virtual void setTimeout(const std::chrono::milliseconds &timeout) = 0;
 
         virtual int bytesAvailable() const = 0;
 
