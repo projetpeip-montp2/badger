@@ -14,8 +14,8 @@ Compilation
 -----------
 
 Le programme nécéssite un support partiel du c++11:  
-* Variadic template
-* functionnal, thread, chrono, memory
+* Variadic template  
+* functionnal, thread, chrono, memory  
 
 Contacts
 --------
