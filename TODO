@@ -14,6 +14,7 @@ Badger:
 
 
 Serial:
+    - Ne pas mettre à jour un param (timeout...) si on l'a déjà mais trouver une solution pour l'initialisation du coup!!
     - Tester, tester et retester...
 
 
