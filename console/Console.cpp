@@ -145,7 +145,7 @@ namespace plt
 
 
         else
-            m_view->error("Unknown command : \"" + command);
+            m_view->error("Unknown command : \"" + command + '"');
     }
 
 
