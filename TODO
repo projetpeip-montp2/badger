@@ -5,15 +5,13 @@ Général:
     - Documenter tout :)
 
 
-Date:
-    - Vérifier que les dates soient bien valides
-
-
 Badger:
     - Mettre les noms de contributeurs
+    - Pouvoir envoyer tout sur une base de données distante
 
 
 Serial:
+    - Pouvoir énumérer les périphériques série de l'ordinateur
     - Ne pas mettre à jour un param (timeout...) si on l'a déjà mais trouver une solution pour l'initialisation du coup!!
     - Tester, tester et retester...
 

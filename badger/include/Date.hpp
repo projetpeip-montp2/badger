@@ -60,6 +60,9 @@ namespace badger
         static bool isLeapYear(unsigned int year);
 
     private:
+	    ////////////////////////////////////////////////////////////
+	    // Member data
+	    ////////////////////////////////////////////////////////////
         unsigned int m_day;
         unsigned int m_month;
         unsigned int m_year;

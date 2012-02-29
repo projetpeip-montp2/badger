@@ -283,8 +283,6 @@ namespace badger
         const std::string &command
     )
     {
-        bool continueToLogin = true;
-
         std::string nameFunction;
         std::istringstream iss(command);
 
@@ -305,6 +303,8 @@ namespace badger
             if(m_access[nameFunction].first && !m_logged)
             {
                 std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
+
+                bool continueToLogin = true;
 
                 while(continueToLogin)
                 {
@@ -383,7 +383,6 @@ namespace badger
         const std::string &str
     ) const
     {
-
         std::string day(str, 0, 2);
         std::string month(str, 2, 2);
         std::string year(str, 4, 4);
@@ -418,62 +417,4 @@ namespace badger
     }
 
 } // namespace badger
-
-
-
-
-/*
-            if(m_access[nameFunction].second && !m_serial.isOpen())
-            {
-                std::cout << "Serial port isn't open" << std::endl;
-                return;
-            }
-
-            else
-            {
-                alreadySent = true;
-
-                sendCommand(m_console, command);
-            }
-
-
-            
-            if(m_access[nameFunction].first && !m_logged)
-            {
-                std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
-
-                while(continueToLogin)
-                {
-                    std::string password;
-
-                    std::cout << "Password : ";
-                    std::getline(std::cin, password);
-
-                    login(password);
-
-                    if(m_logged)
-                    {
-                        sendCommand(m_console, command);
-                        continueToLogin = false;
-                    }
-
-                    else
-                    {
-                        std::string answer;
-
-                        std::cout << "Bad password! Retry (yes)?: ";
-                        std::getline(std::cin, answer);
-
-                        if(answer != "yes")
-                            continueToLogin = false;
-                    }
-                }
-            }
-
-            else
-            {
-                if(!alreadySent)
-                    sendCommand(m_console, command);
-            }
-*/
 

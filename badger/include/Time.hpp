@@ -56,6 +56,9 @@ namespace badger
         unsigned int getSecond() const;
 
     private:
+	    ////////////////////////////////////////////////////////////
+	    // Member data
+	    ////////////////////////////////////////////////////////////
         unsigned int m_hour;
         unsigned int m_minute;
         unsigned int m_second;

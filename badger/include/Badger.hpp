@@ -63,6 +63,15 @@ namespace badger
         template<typename Res, typename... Args>
         void addCommand(const std::string &name, const std::function<Res(Args...)> &function, bool mustBeInRoot, bool needSerialPortOpen);
 
+        void tryToSendCommand(const std::string &command);
+
+        std::string getReturnCommand();
+
+        void sendCommandOnSerial(const std::vector<serial::byte> &command);
+
+        Record parseRecord(const std::string &str) const;
+
+    private:
         void open(const std::string &port);
 
         void close();
@@ -83,15 +92,10 @@ namespace badger
 
         void quit();
 
-        void tryToSendCommand(const std::string &command);
-
-        std::string getReturnCommand();
-
-        void sendCommandOnSerial(const std::vector<serial::byte> &command);
-
-        Record parseRecord(const std::string &str) const;
-
     private:
+	    ////////////////////////////////////////////////////////////
+	    // Member data
+	    ////////////////////////////////////////////////////////////
         bool m_continuer;
         bool m_logged;
 
