@@ -55,6 +55,10 @@ namespace badger
 
         unsigned int getYear() const;
 
+
+        
+        static bool isLeapYear(unsigned int year);
+
     private:
         unsigned int m_day;
         unsigned int m_month;

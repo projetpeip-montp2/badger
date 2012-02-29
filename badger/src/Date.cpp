@@ -36,6 +36,19 @@
 
 namespace badger
 {
+    bool Date::isLeapYear
+    (
+        unsigned int year
+    )
+    {
+        return (year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0));
+    }
+
+
+
+
+
+
     Date::Date
     (
     )
@@ -62,9 +75,11 @@ namespace badger
         unsigned int year
     )
     {
-        setDay(day);
+        // Set the month and the year before the day for checking this last.
         setMonth(month);
         setYear(year);
+
+        setDay(day);
     }
 
 
@@ -73,8 +88,18 @@ namespace badger
         unsigned int day
     )
     {
-        if(day == 0 || day > 31)
-            throw std::runtime_error("Bad day");
+        unsigned int lastDay = 31;
+
+        if(m_month == 2)
+            lastDay = isLeapYear(m_year) ? 29 : 28;
+
+        else if(m_month == 4 || m_month == 6 || m_month == 9 || m_month == 11)
+            lastDay = 30;
+
+
+        // Now check if the day is valid in the current month
+        if(day == 0 || day > lastDay)
+            throw std::runtime_error("Invalid day");
 
         m_day = day;
     }
@@ -94,7 +119,7 @@ namespace badger
     )
     {
         if(month == 0 || month > 12)
-            throw std::runtime_error("Bad month");
+            throw std::runtime_error("Invalid month");
 
         m_month = month;
     }
