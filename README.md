@@ -15,10 +15,10 @@ d'exporter les données pour être qu'elles soient lues depuis le site web.
 Plateformes supportées
 ----------------------
 
-Les plateformes officiellements supportées sont les suivantes:
-* Linux (versions testées : 3.x)
-* Mac OS X (versions testées : 10.7.3)
-* Windows (versions testées : Seven)
+Les plateformes officiellements supportées sont les suivantes:  
+* Linux (versions testées : 3.x)  
+* Mac OS X (versions testées : 10.7.3)  
+* Windows (versions testées : Seven)  
 
 Les plateformes Mac et Windows nécessitent l'installation d'un driver alors que
 sur Linux il est déjà dans le noyau.
