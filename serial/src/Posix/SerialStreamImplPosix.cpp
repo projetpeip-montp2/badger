@@ -320,6 +320,7 @@ namespace priv
         {
             m_baudRates.insert(std::make_pair(BaudRate::Baud_9600,   B9600));
             m_baudRates.insert(std::make_pair(BaudRate::Baud_19200,  B19200));
+            m_baudRates.insert(std::make_pair(BaudRate::Baud_38400,  B38400));
 
             m_staticBaudRatesInitialized = true;
         }

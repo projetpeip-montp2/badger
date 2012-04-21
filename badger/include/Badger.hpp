@@ -61,7 +61,7 @@ namespace badger
 
     private:
         template<typename Res, typename... Args>
-        void addCommand(const std::string &name, const std::function<Res(Args...)> &function, bool mustBeInRoot, bool needSerialPortOpen);
+        void addCommand(const std::string &name, const std::function<Res(Args...)> &function, bool needSerialPortOpen);
 
         void tryToSendCommand(const std::string &command);
 
@@ -75,10 +75,6 @@ namespace badger
         void open(const std::string &port);
 
         void close();
-
-        std::string login(const std::string &password);
-
-        std::string logout();
 
         std::string next();
 
@@ -97,12 +93,11 @@ namespace badger
 	    // Member data
 	    ////////////////////////////////////////////////////////////
         bool m_continuer;
-        bool m_logged;
 
         plt::Console m_console;
 
-        // The first boolean is for root access and the second is for the need of an open serial port
-        std::map<std::string, std::pair<bool,bool>> m_access;
+        // The boolean is for the need of an open serial port
+        std::map<std::string, bool> m_access;
 
         serial::serialstream m_serial;
     };

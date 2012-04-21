@@ -35,13 +35,12 @@ namespace badger
     (
         const std::string &name, 
         const std::function<Res(Args...)> &function, 
-        bool mustBeInRoot,
         bool needSerialPortOpen
     )
     {
         m_console.registerCommand(name, function);
 
-        m_access.insert(std::make_pair(name, std::make_pair(mustBeInRoot, needSerialPortOpen)));
+        m_access.insert(std::make_pair(name, needSerialPortOpen));
     }
 
 } // namespace badger

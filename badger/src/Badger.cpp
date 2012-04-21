@@ -56,8 +56,7 @@ namespace badger
     Badger::Badger
     (
     ) :
-    m_continuer(true),
-    m_logged(false)
+    m_continuer(true)
     {
         // Important, a console need a view, otherwise seg fault :)
         m_console.setView( std::make_shared<ConsoleViewBadger>() );
@@ -65,34 +64,29 @@ namespace badger
         m_console.enable(true);
 
         std::function<void(const std::string&)> openFunction = std::bind(&Badger::open, this, std::placeholders::_1);
-        addCommand("open", openFunction, false, false);
+        addCommand("open", openFunction, false);
 
         std::function<void()> closeFunction = std::bind(&Badger::close, this);
-        addCommand("close", closeFunction, false, true);
-
-        std::function<std::string(const std::string&)> loginFunction = std::bind(&Badger::login, this, std::placeholders::_1);
-        addCommand("login", loginFunction, false, true);
-
-        std::function<std::string()> logoutFunction = std::bind(&Badger::logout, this);
-        addCommand("logout", logoutFunction, true, true);
+        addCommand("close", closeFunction, true);
 
         std::function<std::string()> nextFunction = std::bind(&Badger::next, this);
-        addCommand("next", nextFunction, true, true);
+        addCommand("next", nextFunction, true);
 
         std::function<std::string()> rollbackFunction = std::bind(&Badger::rollback, this);
-        addCommand("rollback", rollbackFunction, true, true);
+        addCommand("rollback", rollbackFunction, true);
 
         std::function<std::string()> eraseFunction = std::bind(&Badger::erase, this);
-        addCommand("erase", eraseFunction, true, true);
+        addCommand("erase", eraseFunction, true);
 
         std::function<std::string()> countFunction = std::bind(&Badger::count, this);
-        addCommand("count", countFunction, false, true);
+        addCommand("count", countFunction, true);
 
         std::function<std::string(const Date&, const Time&, const Time&)> getFunction = std::bind(&Badger::get, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-        addCommand("get", getFunction, true, true);
+        addCommand("get", getFunction, true);
 
         std::function<void()> quitFunction = std::bind(&Badger::quit, this);
-        addCommand("quit", quitFunction, false, false);
+        addCommand("quit", quitFunction, false);
+        addCommand("exit", quitFunction, false);
 
 
         std::cout << "==================================" << std::endl;
@@ -118,6 +112,7 @@ namespace badger
     )
     {
         m_serial.open(port);
+        m_serial.setBaudRate(serial::BaudRate::Baud_38400);
     }
 
 
@@ -126,48 +121,7 @@ namespace badger
     )
     {
         if(m_serial.isOpen())
-        {
-            logout();
-
             m_serial.close();
-        }
-    }
-
-
-    std::string Badger::login
-    (
-        const std::string &password
-    )
-    {
-        std::vector<serial::byte> command;
-        command.push_back('L');
-
-        for(unsigned int i(0); i<password.size(); ++i)
-            command.push_back(password[i]);
-
-        sendCommandOnSerial(command);
-        std::string result = getReturnCommand();
-
-        m_logged = (result == "A") ? true : false;
-
-        return (result == "A") ? "You are logged now" : "Error during login";
-    }
-
-
-    std::string Badger::logout
-    (
-    )
-    {
-        std::vector<serial::byte> command;
-        command.push_back('O');
-
-        sendCommandOnSerial(command);
-        std::string result = getReturnCommand();
-
-        if(result == "A")
-            m_logged = false;
-
-        return (result == "A") ? "" : "Error during logout";
     }
 
 
@@ -181,7 +135,9 @@ namespace badger
         sendCommandOnSerial(command);
         std::string result = getReturnCommand();
 
-        return (result == "E") ? "Database is empty or finish (try rollback maybe)" : result.erase(0,1);
+        std::string begin(result, 0, 1);
+
+        return (begin != "A") ? "Database is empty (E) or finish (F), result: " + begin : result.erase(0,1);
     }
 
 
@@ -288,57 +244,20 @@ namespace badger
 
         iss >> nameFunction;
 
+        bool canBeSend = true;
+
         auto it = m_access.find(nameFunction);
 
         if(it != m_access.end())
         {
-            bool canBeSend = true;
-
-            if(m_access[nameFunction].second && !m_serial.isOpen())
+            if(m_access[nameFunction] && !m_serial.isOpen())
             {
                 std::cout << "Serial port isn't open" << std::endl;
-                return;
+                bool canBeSend = false;
             }
-
-            if(m_access[nameFunction].first && !m_logged)
-            {
-                std::cout << "Information: You must be logged to use the function: " << nameFunction << std::endl;
-
-                bool continueToLogin = true;
-
-                while(continueToLogin)
-                {
-                    std::string password;
-
-                    std::cout << "Password : ";
-                    std::getline(std::cin, password);
-
-                    login(password);
-
-                    if(m_logged)
-                        continueToLogin = false;
-
-                    else
-                    {
-                        std::string answer;
-
-                        std::cout << "Bad password! Retry (yes)?: ";
-                        std::getline(std::cin, answer);
-
-                        if(answer != "yes")
-                            continueToLogin = false;
-                    }
-                }
-
-
-                canBeSend = m_logged ? true : false;
-            }
-
-            if(canBeSend)
-                sendCommand(m_console, command);
         }
 
-        else
+        if(canBeSend)
             sendCommand(m_console, command);
     }
 
@@ -348,7 +267,9 @@ namespace badger
     )
     {
         std::vector<serial::byte> result;
-        m_serial.readUntil(result, '\r');
+
+        // After readUntil, flush the stream to avoid some read problems
+        m_serial.readUntil(result, '\r').flush();
 
         if(result.front() != serial::byte(2) || result.back() != serial::byte(13))
             throw std::runtime_error("The return command don't begin by STX or don't end by CR");

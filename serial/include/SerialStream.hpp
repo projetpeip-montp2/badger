@@ -42,7 +42,8 @@ namespace serial
     enum class BaudRate
     {
         Baud_9600,
-        Baud_19200
+        Baud_19200,
+        Baud_38400
     };
 
 

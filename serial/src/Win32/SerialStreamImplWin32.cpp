@@ -294,6 +294,7 @@ namespace priv
         {
             m_baudRates.insert(std::make_pair(BaudRate::Baud_9600,   CBR_9600));
             m_baudRates.insert(std::make_pair(BaudRate::Baud_19200,  CBR_19200));
+            m_baudRates.insert(std::make_pair(BaudRate::Baud_38400,  CBR_38400));
 
             m_staticBaudRatesInitialized = true;
         }
