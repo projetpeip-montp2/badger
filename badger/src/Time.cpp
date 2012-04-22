@@ -31,6 +31,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
@@ -219,7 +220,11 @@ namespace badger
         const Time &time
     )
     {
-        return stream << time.getHour() << ':' << time.getMinute() << ':' << time.getSecond();
+        return stream << std::setfill('0') 
+                      << std::setw(2) << time.getHour() << ':' 
+                      << std::setw(2) << time.getMinute() << ':' 
+                      << std::setw(2) << time.getSecond() 
+                      << std::setfill(' ');
     }
 
 

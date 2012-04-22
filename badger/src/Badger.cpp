@@ -34,6 +34,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 namespace badger
 {
@@ -81,8 +82,17 @@ namespace badger
         std::function<std::string()> countFunction = std::bind(&Badger::count, this);
         addCommand("count", countFunction, true);
 
-        std::function<std::string(const Date&, const Time&, const Time&)> getFunction = std::bind(&Badger::get, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-        addCommand("get", getFunction, true);
+        std::function<std::string()> getDateTimeFunction = std::bind(&Badger::getDateTime, this);
+        addCommand("getDateTime", getDateTimeFunction, true);
+
+        std::function<std::string(const Date&, const Time&)> setDateTimeFunction = std::bind(&Badger::setDateTime, this, std::placeholders::_1, std::placeholders::_2);
+        addCommand("setDateTime", setDateTimeFunction, true);
+
+        std::function<std::string(const Date&, const Time&, const Time&)> displayFunction = std::bind(&Badger::display, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        addCommand("display", displayFunction, true);
+
+        std::function<std::string(const std::string&, const Date&, const Time&, const Time&)> sendFunction = std::bind(&Badger::send, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
+        addCommand("send", sendFunction, true);
 
         std::function<void()> quitFunction = std::bind(&Badger::quit, this);
         addCommand("quit", quitFunction, false);
@@ -167,7 +177,7 @@ namespace badger
 
         if(answer == "yes")
         {
-            std::cout << "Information: erase duration < 60 seconds" << std::endl;
+            std::cout << "Wait..." << std::endl;
 
             std::vector<serial::byte> command;
             command.push_back('E');
@@ -197,30 +207,104 @@ namespace badger
     }
 
 
-    std::string Badger::get
+    std::string Badger::getDateTime
+    (
+    )
+    {
+        std::vector<serial::byte> command;
+        command.push_back('T');
+
+        sendCommandOnSerial(command);
+        std::string result = getReturnCommand();
+        result.erase(result.begin());
+
+        Date date;
+        Time time;
+
+        std::istringstream iss( std::string(result, 0, 2) + '-' + std::string(result, 2, 2) + '-' + std::string(result, 4, 4) );
+        iss >> date;
+
+        iss.clear();
+        iss.str( std::string(result, 8, 2) + ':' + std::string(result, 10, 2) + ':' + std::string(result, 12, 2) );
+        iss >> time;
+
+
+        std::ostringstream oss;
+        oss << "Date: " << date << ",\tTime:" << time;
+        return oss.str();
+    }
+
+
+    std::string Badger::setDateTime
+    (
+        const Date &date, 
+        const Time &time
+    )
+    {
+        std::ostringstream oss;
+        oss << std::setfill('0');
+        oss << std::setw(2) << date.getDay();
+        oss << std::setw(2) << date.getMonth();
+        oss << std::setw(4) << date.getYear();
+
+        oss << std::setw(2) << time.getHour();
+        oss << std::setw(2) << time.getMinute();
+        oss << std::setw(2) << time.getSecond();
+        oss << 0; // Event
+
+
+        std::vector<serial::byte> command;
+        command.push_back('S');
+       
+        auto datetime = oss.str();
+        for(auto c : datetime)
+            command.push_back(c);
+
+
+        sendCommandOnSerial(command);
+        std::string result = getReturnCommand();
+        result.erase(result.begin());
+
+        oss.clear();
+        oss.str("");
+        oss << "Date: " << date << ",\tTime:" << time;
+        return oss.str();
+    }
+
+
+    std::string Badger::display
     (
         const Date &date, 
         const Time &begin, 
         const Time &end
     )
     {
-        unsigned int numberOfRecords;
+        auto records = get(date, begin, end);
 
-        std::string countStr = count();
-        std::istringstream iss(countStr);
+        for(unsigned int i(0); i<records.size(); ++i)
+            std::cout << records[i].date << ' ' << records[i].time << ' ' << records[i].data << std::endl;
 
-        if(!(iss >> numberOfRecords))
-            throw std::runtime_error("Unable to parse number of records");
-    
-        rollback();
+        return "";
+    }
 
-        for(unsigned int i(0); i<numberOfRecords; ++i)
-        {
-            Record rcd = parseRecord(next());
 
-            if(rcd.date == date && rcd.time >= begin && rcd.time <= end)
-                std::cout << rcd.date << ' ' << rcd.time << ' ' << rcd.data << std::endl;
-        }
+    std::string Badger::send
+    (
+        const std::string &passwd,
+        const Date &date, 
+        const Time &begin, 
+        const Time &end
+    )
+    {
+        auto records = get(date, begin, end);
+
+        std::cout << "Password: " << passwd << std::endl;
+        std::cout << "Send in database..." << std::endl;
+
+        for(unsigned int i(0); i<records.size(); ++i)
+            std::cout << records[i].date << ' ' << records[i].time << ' ' << records[i].data << std::endl;
+
+        std::cout << "Sending finish" << std::endl;
 
         return "";
     }
@@ -253,7 +337,7 @@ namespace badger
             if(m_access[nameFunction] && !m_serial.isOpen())
             {
                 std::cout << "Serial port isn't open" << std::endl;
-                bool canBeSend = false;
+                canBeSend = false;
             }
         }
 
@@ -320,6 +404,38 @@ namespace badger
 
         return rcd;
     }
+
+
+    std::vector<Badger::Record> Badger::get
+    (
+        const Date &date, 
+        const Time &begin, 
+        const Time &end
+    )
+    {
+        unsigned int numberOfRecords;
+
+        std::string countStr = count();
+        std::istringstream iss(countStr);
+
+        if(!(iss >> numberOfRecords))
+            throw std::runtime_error("Unable to parse number of records");
+    
+        rollback();
+
+        std::vector<Record> records;
+
+        for(unsigned int i(0); i<numberOfRecords; ++i)
+        {
+            Record rcd = parseRecord(next());
+
+            if(rcd.date == date && rcd.time >= begin && rcd.time <= end)
+                records.push_back( rcd);
+        }
+
+        return records;
+    }
+
 
 
     void Badger::run

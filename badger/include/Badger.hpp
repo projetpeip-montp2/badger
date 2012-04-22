@@ -32,6 +32,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "Console.hpp"
 
@@ -71,6 +72,8 @@ namespace badger
 
         Record parseRecord(const std::string &str) const;
 
+        std::vector<Record> get(const Date &date, const Time &begin, const Time &end);
+
     private:
         void open(const std::string &port);
 
@@ -84,7 +87,13 @@ namespace badger
 
         std::string count();
 
-        std::string get(const Date &date, const Time &begin, const Time &end);
+        std::string getDateTime();
+
+        std::string setDateTime(const Date &date, const Time &time);
+
+        std::string display(const Date &date, const Time &begin, const Time &end);
+
+        std::string send(const std::string &passwd, const Date &date, const Time &begin, const Time &end);
 
         void quit();
 

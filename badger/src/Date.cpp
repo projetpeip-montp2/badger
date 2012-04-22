@@ -31,6 +31,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <stdexcept>
 
@@ -210,7 +211,11 @@ namespace badger
         const Date &date
     )
     {
-        return stream << date.getDay() << '/' << date.getMonth() << '/' << date.getYear();
+        return stream << std::setfill('0') 
+                      << std::setw(2) <<  date.getDay() << '-' 
+                      << std::setw(2) << date.getMonth() << '-' 
+                      << std::setw(4) << date.getYear() 
+                      << std::setfill(' ');
     }
 
 
@@ -225,7 +230,7 @@ namespace badger
         std::string str;
         stream >> str;
 
-        if( std::sscanf(&str[0], "%u/%u/%u", &day, &month, &year) != 3)
+        if( std::sscanf(&str[0], "%u-%u-%u", &day, &month, &year) != 3)
             throw std::runtime_error("Unable to extract a date"); 
 
         date.set(day, month, year);
