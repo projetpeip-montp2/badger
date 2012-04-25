@@ -30,6 +30,7 @@
 #include "Badger.hpp"
 
 #include "ConsoleViewBadger.hpp"
+#include "Database.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -301,10 +302,36 @@ namespace badger
         std::cout << "Password: " << passwd << std::endl;
         std::cout << "Send in database..." << std::endl;
 
+        badger::Database db("localhost", "vbMifare", passwd, "vbMifare", 0);
+        db.prepare("Insert INTO BadgingInformations (Mifare, Date, Time) VALUES(?, ?, ?)");
+
         for(unsigned int i(0); i<records.size(); ++i)
-            std::cout << records[i].date << ' ' << records[i].time << ' ' << records[i].data << std::endl;
+        {
+            std::string dateString;
+            std::string timeString;
+
+            // Extract date
+            std::ostringstream oss;
+            oss << records[i].date;
+            dateString = oss.str();
+
+            // Extract time
+            oss.clear();
+            oss.str("");
+            oss << records[i].time;
+            timeString = oss.str();
+
+            db.addParameterString( &records[i].data );
+            db.addParameterString( &dateString );
+            db.addParameterString( &timeString );
+
+            db.execute(i == records.size()-1 ? false : true);
+        }
 
         std::cout << "Sending finish" << std::endl;
+        std::cout << "Updating registrations status" << std::endl;
+            //db.prepare("TODO: SQL REQUEST HERE");
+        std::cout << "Updating finish" << std::endl;
 
         return "";
     }
