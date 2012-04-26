@@ -17,6 +17,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 
+set(MYSQL_FIND_REQUIRED TRUE)
 include("FindMySQL.cmake")
 
 
@@ -79,5 +80,5 @@ endif()
 
 
 # Config link stage
-target_link_libraries(badger ${MYSQLCPP_DYNLOAD_MYSQL_LIB})
+target_link_libraries(badger ${MYSQL_LIBRARY})
 
