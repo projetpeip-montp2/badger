@@ -7,7 +7,8 @@ Général:
 
 Badger:
     - Mettre les noms de contributeurs
-    - Pouvoir envoyer tout sur une base de données distante
+    - Ecrire la requête pour mettre à jour les registrations
+    - Ne plus opérer sur localhost, mais sur sun5120
 
 
 Serial:
@@ -17,4 +18,5 @@ Serial:
 
 
 - CMake
+    - Améliorer la détection de mysql sous win32
     - Comprendre pourquoi ça fonctionne pas avec XCode

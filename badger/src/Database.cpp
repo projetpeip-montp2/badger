@@ -42,7 +42,7 @@ namespace badger
         const std::string &database, 
         unsigned int port
     ) :
-    hasRequestWaiting(false)
+    m_hasRequestPrepared(false)
     {
         connect(host, user, passwd, database, port);
     }
@@ -80,7 +80,7 @@ namespace badger
     (
     )
     {
-        deleteSTMT();
+        deletePreparedRequest();
 
         mysql_close(&m_link);
     }
@@ -117,8 +117,8 @@ namespace badger
         const std::string &query
     )
     {
-        if(hasRequestWaiting)
-            throw std::runtime_error("A request is already prepared");
+        if(m_hasRequestPrepared)
+            deletePreparedRequest();
 
         m_stmt = mysql_stmt_init(&m_link);
 
@@ -128,17 +128,16 @@ namespace badger
         if(mysql_stmt_prepare(m_stmt, query.c_str(), query.size()))
             throw std::runtime_error("Impossible de preparer la requête: " + lastError());
 
-        hasRequestWaiting = true;
+        m_hasRequestPrepared = true;
     }
 
 
     void Database::execute
     (
-        bool deleteRequest
     )
     {
-        if(!hasRequestWaiting)
-            throw std::runtime_error("A request is already prepared");
+        if(!m_hasRequestPrepared)
+            throw std::runtime_error("No prepared request");
 
         unsigned int paramCount = mysql_stmt_param_count(m_stmt);
         unsigned int size = m_binds.size();
@@ -158,24 +157,21 @@ namespace badger
         if(mysql_stmt_execute(m_stmt))
             throw std::runtime_error("Impossible d'executer la requête: " + lastErrorSTMT());
 
-        if(deleteRequest)
-            deleteSTMT();
-
         m_binds.clear();
         m_ts.clear();
     }
 
 
-    void Database::deleteSTMT
+    void Database::deletePreparedRequest
     (
     )
     {
-        if(hasRequestWaiting)
+        if(m_hasRequestPrepared)
         {
             if(mysql_stmt_close(m_stmt))
-                throw std::runtime_error("Impossible de fermer la requête: " + lastErrorSTMT());
+                throw std::runtime_error("Impossible de supprimer la requête: " + lastErrorSTMT());
 
-            hasRequestWaiting = false;
+            m_hasRequestPrepared = false;
         }
     }
 

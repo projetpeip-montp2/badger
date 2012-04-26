@@ -56,7 +56,9 @@ namespace badger
    
         void prepare(const std::string &query);
 
-        void execute(bool deleteRequest);
+        void execute();
+
+        void deletePreparedRequest();
 
         void addParameterLong(long *data);
 
@@ -67,9 +69,7 @@ namespace badger
 
         std::string lastErrorSTMT();
 
-        void deleteSTMT();
-
-        bool hasRequestWaiting;
+        bool m_hasRequestPrepared;
 
         MYSQL m_link;
         MYSQL_STMT *m_stmt;

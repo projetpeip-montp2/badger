@@ -299,7 +299,6 @@ namespace badger
     {
         auto records = get(date, begin, end);
 
-        std::cout << "Password: " << passwd << std::endl;
         std::cout << "Send in database..." << std::endl;
 
         badger::Database db("localhost", "vbMifare", passwd, "vbMifare", 0);
@@ -312,7 +311,10 @@ namespace badger
 
             // Extract date
             std::ostringstream oss;
-            oss << records[i].date;
+            oss << std::setfill('0');
+            oss << std::setw(4) << records[i].date.getYear() 
+                << std::setw(2) << records[i].date.getMonth() 
+                << std::setw(2) << records[i].date.getDay();
             dateString = oss.str();
 
             // Extract time
@@ -325,13 +327,16 @@ namespace badger
             db.addParameterString( &dateString );
             db.addParameterString( &timeString );
 
-            db.execute(i == records.size()-1 ? false : true);
+            db.execute();
         }
 
-        std::cout << "Sending finish" << std::endl;
-        std::cout << "Updating registrations status" << std::endl;
+        std::cout << "Sending finish." << std::endl;
+        std::cout << "Updating registrations status." << std::endl;
+            //db.deletePreparedRequest();
             //db.prepare("TODO: SQL REQUEST HERE");
-        std::cout << "Updating finish" << std::endl;
+            //db.execute();
+        std::cout << "Updating finish." << std::endl;
+        std::cout << "You can now erase the records." << std::endl;
 
         return "";
     }
