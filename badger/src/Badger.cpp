@@ -442,7 +442,7 @@ namespace badger
 
         rcd.date = Date(std::atoi(&day[0]), std::atoi(&month[0]), std::atoi(&year[0]));
         rcd.time = Time(std::atoi(&hour[0]), std::atoi(&minute[0]), std::atoi(&seconde[0]));
-        rcd.data = std::string(str, 18);
+        rcd.data = std::string(str, 17);
 
         return rcd;
     }
