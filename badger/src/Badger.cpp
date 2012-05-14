@@ -113,6 +113,7 @@ namespace badger
         std::cout << "    Welcome to badger program    " << std::endl;
         std::cout << std::endl;
         std::cout << "To get available options, type '?'" << std::endl;
+        std::cout << "By Badger Team" << std::endl;
         std::cout << "==================================" << std::endl;
     }
 
