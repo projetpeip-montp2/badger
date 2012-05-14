@@ -109,6 +109,8 @@ namespace badger
         std::map<std::string, bool> m_access;
 
         serial::serialstream m_serial;
+
+        static const std::string m_request;
     };
 
 } // namespace badger
