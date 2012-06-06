@@ -17,6 +17,24 @@ Serial:
     - Tester, tester et retester...
 
 
-- CMake
+- CMake:
     - Améliorer la détection de mysql sous win32
     - Comprendre pourquoi ça fonctionne pas avec XCode
+
+
+- Tamby:
+    - Changer la couleur de la led de tension.
+    - Si mauvais enregistrement clignoter rouge et pas vert.
+    - Rajouter un port USB pour le recharger (empecher de se mettre en veille si brancher en USB).
+    - Récuperer le code, "devis", schéma circuit, consommation énergétique + tout ce qui est disponible.
+    - Mémoire réservée, mémoire pour chaque enregistrement.
+        
+    - On peut pas l'éteindre s'il la connection bluetooh est établie.
+
+    - Ne pas remettre à zéro (facultatif).
+    - Pouvoir setter/getter un nom au module.
+
+    - Revoir le système date, jour, event (heure fonctionne :) )
+
+    - Ajouter fonction veille dans le programme??
+

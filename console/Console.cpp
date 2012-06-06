@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////
-// Copyright (c) 2011 - Hiairrassary Victor
+// Copyright (c) 2011 - 2012 Hiairrassary Victor
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
