@@ -52,18 +52,6 @@ namespace badger
     }
 
 
-    // Important: don't remove the last space of each line! They are for SQL request!
-    const std::string Badger::m_request = 
-"UPDATE vbMifare.Registrations "
-"INNER JOIN Polytech.Users ON Polytech.Users.Username = vbMifare.Registrations.Id_user "
-"INNER JOIN vbMifare.Lectures ON (vbMifare.Registrations.Id_lecture = vbMifare.Lectures.Id_lecture AND vbMifare.Registrations.Id_package = " "vbMifare.Lectures.Id_package AND (vbMifare.Lectures.Date < CURDATE() OR (vbMifare.Lectures.Date = CURDATE() AND EndTime < CURTIME()))) "
-"LEFT JOIN vbMifare.BadgingInformations ON (vbMifare.Lectures.Date = vbMifare.BadgingInformations.Date AND Polytech.Users.Mifare = " "vbMifare.BadgingInformations.Mifare AND vbMifare.Lectures.StartTime <= vbMifare.BadgingInformations.Time AND vbMifare.Lectures.EndTime >= " "vbMifare.BadgingInformations.Time) "
-"SET vbMifare.Registrations.Status = CASE "
-"WHEN vbMifare.BadgingInformations.Date IS NULL THEN \"Absent\" "
-"ELSE \"Present\" "
-"END;";
-
-
     Badger::Badger
     (
     ) :
@@ -311,7 +299,7 @@ namespace badger
 
         std::cout << "Send in database..." << std::endl;
 
-        badger::Database db("localhost", "vbMifare", passwd, "vbMifare", 0);
+        badger::Database db("mysql5srv-labo3.univ-montp2.fr", "numsem", passwd, "numsem", 3306);
         db.prepare("Insert INTO BadgingInformations (Mifare, Date, Time) VALUES(?, ?, ?)");
 
         for(unsigned int i(0); i<records.size(); ++i)
@@ -341,11 +329,6 @@ namespace badger
         }
 
         std::cout << "Sending finish." << std::endl;
-        std::cout << "Updating registrations status." << std::endl;
-            db.deletePreparedRequest();
-            db.prepare(Badger::m_request);
-            db.execute();
-        std::cout << "Updating finish." << std::endl;
         std::cout << "You can now erase the records." << std::endl;
 
         return "";
