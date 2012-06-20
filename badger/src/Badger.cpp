@@ -30,12 +30,12 @@
 #include "Badger.hpp"
 
 #include "ConsoleViewBadger.hpp"
-#include "Database.hpp"
 
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <fstream>
 
 namespace badger
 {
@@ -89,8 +89,8 @@ namespace badger
         std::function<std::string(const Date&, const Time&, const Time&)> displayFunction = std::bind(&Badger::display, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
         addCommand("display", displayFunction, true);
 
-        std::function<std::string(const std::string&, const Date&, const Time&, const Time&)> sendFunction = std::bind(&Badger::send, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4);
-        addCommand("send", sendFunction, true);
+        std::function<std::string(const Date&, const Time&, const Time&)> csvFunction = std::bind(&Badger::csv, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        addCommand("csv", csvFunction, true);
 
         std::function<void()> quitFunction = std::bind(&Badger::quit, this);
         addCommand("quit", quitFunction, false);
@@ -287,9 +287,8 @@ namespace badger
     }
 
 
-    std::string Badger::send
+    std::string Badger::csv
     (
-        const std::string &passwd,
         const Date &date, 
         const Time &begin, 
         const Time &end
@@ -297,39 +296,16 @@ namespace badger
     {
         auto records = get(date, begin, end);
 
-        std::cout << "Send in database..." << std::endl;
+        std::ofstream out("badging.csv", std::ios::out | std::ios::trunc);
 
-        badger::Database db("mysql5srv-labo3.univ-montp2.fr", "numsem", passwd, "numsem", 3306);
-        db.prepare("Insert INTO BadgingInformations (Mifare, Date, Time) VALUES(?, ?, ?)");
+        if(!out)
+            throw std::runtime_error("Cannot open file for csv export");
 
         for(unsigned int i(0); i<records.size(); ++i)
         {
-            std::string dateString;
-            std::string timeString;
-
-            // Extract date
-            std::ostringstream oss;
-            oss << std::setfill('0');
-            oss << std::setw(4) << records[i].date.getYear() 
-                << std::setw(2) << records[i].date.getMonth() 
-                << std::setw(2) << records[i].date.getDay();
-            dateString = oss.str();
-
-            // Extract time
-            oss.clear();
-            oss.str("");
-            oss << records[i].time;
-            timeString = oss.str();
-
-            db.addParameterString( &records[i].data );
-            db.addParameterString( &dateString );
-            db.addParameterString( &timeString );
-
-            db.execute();
+            if( !(out << '"' << records[i].date << "\",\"" << records[i].time << "\",\"" << records[i].data << '"' << std::endl) )
+                throw std::runtime_error("Error during csv export");
         }
-
-        std::cout << "Sending finish." << std::endl;
-        std::cout << "You can now erase the records." << std::endl;
 
         return "";
     }

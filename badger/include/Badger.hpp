@@ -93,7 +93,7 @@ namespace badger
 
         std::string display(const Date &date, const Time &begin, const Time &end);
 
-        std::string send(const std::string &passwd, const Date &date, const Time &begin, const Time &end);
+        std::string csv(const Date &date, const Time &begin, const Time &end);
 
         void quit();
 
