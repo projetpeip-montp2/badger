@@ -17,10 +17,6 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 
-set(MYSQL_FIND_REQUIRED TRUE)
-include("FindMySQL.cmake")
-
-
 # Detect the compiler and its version
 # Note: on some platforms (OS X), CMAKE_COMPILER_IS_GNUCXX is true
 # even when CLANG is used, therefore the Clang test is done first
@@ -78,7 +74,4 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     endif()
 endif()
 
-
-# Config link stage
-target_link_libraries(badger ${MYSQL_LIBRARY})
 
