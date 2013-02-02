@@ -74,7 +74,7 @@ namespace badger
         unsigned int hour
     )
     {
-        if(hour == 0 || hour > 24)
+        if(hour > 24)
             throw std::runtime_error("Bad hour");
 
         m_hour = hour;
