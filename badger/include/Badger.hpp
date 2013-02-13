@@ -74,6 +74,8 @@ namespace badger
 
         std::vector<Record> get(const Date &date, const Time &begin, const Time &end);
 
+        std::vector<Record> getAll();
+
     private:
         void open(const std::string &port);
 
@@ -86,6 +88,8 @@ namespace badger
         std::string erase();
 
         std::string count();
+
+        std::string minMaxDate();
 
         std::string getDateTime();
 

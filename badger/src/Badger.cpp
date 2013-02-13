@@ -68,6 +68,9 @@ namespace badger
         std::function<void()> closeFunction = std::bind(&Badger::close, this);
         addCommand("close", closeFunction, true);
 
+        std::function<std::string()> minMaxDateFunction = std::bind(&Badger::minMaxDate, this);
+        addCommand("minMaxDate", minMaxDateFunction, true);
+
         std::function<std::string()> nextFunction = std::bind(&Badger::next, this);
         addCommand("next", nextFunction, true);
 
@@ -271,6 +274,39 @@ namespace badger
     }
 
 
+    std::string Badger::minMaxDate
+    (
+    )
+    {
+        auto records = getAll();
+
+        std::string result = "No records!";
+
+        if(!records.empty())
+        {
+            Date min = records[0].date;
+            Date max = records[0].date;
+
+            for(unsigned int i(1); i<records.size(); ++i)
+            {
+                if(records[i].date < min)
+                    min = records[i].date;
+
+                if(max < records[i].date)
+                    max = records[i].date;
+            }
+
+            std::ostringstream oss;
+            oss << "min: " << min << '\n' << "max: " << max;
+
+            result = oss.str();
+        }
+
+
+        return result;
+    }
+
+
     std::string Badger::display
     (
         const Date &date, 
@@ -407,11 +443,8 @@ namespace badger
     }
 
 
-    std::vector<Badger::Record> Badger::get
+    std::vector<Badger::Record> Badger::getAll
     (
-        const Date &date, 
-        const Time &begin, 
-        const Time &end
     )
     {
         unsigned int numberOfRecords;
@@ -430,11 +463,31 @@ namespace badger
         {
             Record rcd = parseRecord(next());
 
-            if(rcd.date == date && rcd.time >= begin && rcd.time <= end)
-                records.push_back( rcd);
+            records.push_back(rcd);
         }
 
         return records;
+    }
+
+
+    std::vector<Badger::Record> Badger::get
+    (
+        const Date &date, 
+        const Time &begin, 
+        const Time &end
+    )
+    {
+        auto records = getAll();
+
+        std::vector<Record> tmp;
+
+        for(unsigned int i(0); i<records.size(); ++i)
+        {
+            if(records[i].date == date && records[i].time >= begin && records[i].time <= end)
+                tmp.push_back(records[i]);
+        }
+
+        return tmp;
     }
 
 
